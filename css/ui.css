@@ -1,0 +1,27 @@
+﻿.card .title { font-weight: 700; color: #d7e8ff; }
+.card .desc { color: #9cb2d9; font-size: 0.84rem; }
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  font-size: 0.78rem;
+}
+.progress {
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.progress > div {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #18ffd0, #1f87ff);
+}
+.heat0 { color: #7fffb2; }
+.heat1 { color: #c4ff74; }
+.heat2 { color: #ffe07b; }
+.heat3 { color: #ff7f8e; }

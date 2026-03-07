@@ -1,0 +1,10 @@
+﻿[
+  {"id":"first_sale","name":"First Exchange","desc":"Make your first sale.","goal":"lifetimeSales","target":100,"rewardType":"cleanMoney","reward":120},
+  {"id":"starter_growth","name":"Street Presence","desc":"Reach $5,000 total sales.","goal":"lifetimeSales","target":5000,"rewardType":"priceBoost","reward":0.03},
+  {"id":"front_owner","name":"Front Owner","desc":"Buy your first laundering front.","goal":"frontsOwned","target":1,"rewardType":"cleanMoney","reward":750},
+  {"id":"district_climber","name":"Territory Runner","desc":"Unlock 3 districts.","goal":"districtsOwned","target":3,"rewardType":"heatDown","reward":8},
+  {"id":"workforce","name":"Crew Builder","desc":"Hire 40 workers total.","goal":"workersTotal","target":40,"rewardType":"cleanMoney","reward":3500},
+  {"id":"risk_manager","name":"Risk Manager","desc":"Reduce heat under 15 after reaching Raid Risk once.","goal":"raidThenCool","target":1,"rewardType":"cleanMoney","reward":5000},
+  {"id":"launder_legend","name":"Clean Ledger","desc":"Launder $150,000 total.","goal":"lifetimeLaundered","target":150000,"rewardType":"launderBoost","reward":0.12},
+  {"id":"empire_core","name":"Empire Core","desc":"Own 100 workers and all districts.","goal":"empireCore","target":1,"rewardType":"saleBoost","reward":0.08}
+]

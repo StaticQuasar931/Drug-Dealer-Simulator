@@ -1,0 +1,8 @@
+﻿[
+  {"id":"school","name":"School Grounds","unlockCost":0,"saleBonus":1,"heatMod":1,"desc":"Starter local route."},
+  {"id":"downtown","name":"Downtown","unlockCost":2500,"saleBonus":1.08,"heatMod":1.07,"desc":"Dense customer flow."},
+  {"id":"industrial","name":"Industrial District","unlockCost":9000,"saleBonus":1.12,"heatMod":1.1,"desc":"Cheap warehousing."},
+  {"id":"harbor","name":"Harbor","unlockCost":28000,"saleBonus":1.18,"heatMod":1.16,"desc":"Strong logistics, stronger patrols."},
+  {"id":"airport","name":"Airport","unlockCost":82000,"saleBonus":1.24,"heatMod":1.22,"desc":"High margin routes."},
+  {"id":"underground","name":"Underground Market","unlockCost":180000,"saleBonus":1.35,"heatMod":1.28,"desc":"Elite demand network."}
+]

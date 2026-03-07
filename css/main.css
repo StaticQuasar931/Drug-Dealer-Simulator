@@ -1,0 +1,152 @@
+﻿:root {
+  --bg0: #0a0d18;
+  --bg1: #10162a;
+  --bg2: #18243f;
+  --ink: #e8f0ff;
+  --muted: #8ea3c7;
+  --cy: #29f7d3;
+  --pk: #ff4ac7;
+  --or: #ff9a3c;
+  --bad: #ff5c70;
+  --ok: #6dff8d;
+  --card: rgba(17, 27, 49, 0.85);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: Bahnschrift, Trebuchet MS, Segoe UI, sans-serif;
+  background: radial-gradient(circle at 15% 10%, #1f355d 0%, var(--bg0) 40%), linear-gradient(130deg, #090c16, #111931);
+  min-height: 100vh;
+  transform-origin: top center;
+}
+#bgAura {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 88% 15%, rgba(255, 74, 199, 0.17), transparent 30%), radial-gradient(circle at 20% 85%, rgba(41, 247, 211, 0.15), transparent 35%);
+  pointer-events: none;
+  z-index: -1;
+}
+.topbar {
+  display: grid;
+  grid-template-columns: 1.5fr 1.2fr 0.8fr;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(12, 20, 40, 0.8);
+  backdrop-filter: blur(6px);
+}
+.title-wrap { display: flex; gap: 12px; align-items: center; }
+.banner { width: 100px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); }
+.title-wrap h1 { margin: 0; letter-spacing: 0.7px; font-size: 1.25rem; }
+.title-wrap p { margin: 2px 0 0; color: var(--muted); }
+.resources {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.resources div {
+  background: var(--card);
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.resources span { display: block; color: var(--muted); font-size: 0.8rem; }
+.resources strong { color: var(--cy); font-size: 1rem; }
+.btns { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+.panel {
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.panel h2 { margin: 0 0 10px; font-size: 1rem; color: #cde2ff; }
+.cards { display: grid; gap: 8px; max-height: 300px; overflow: auto; padding-right: 4px; }
+.card {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(8,13,24,0.65);
+  border-radius: 10px;
+  padding: 8px;
+}
+.row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.meter {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+#heatBar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #2cff9a, #ffd84f, #ff5f63);
+}
+.log {
+  height: 130px;
+  overflow: auto;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 0.86rem;
+  background: rgba(0,0,0,0.2);
+}
+.event {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px;
+  margin: 8px 0;
+  background: rgba(255,255,255,0.04);
+  color: #ffd8f5;
+}
+.quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 10px 0; }
+button {
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(22, 36, 66, 0.9);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+button:hover { border-color: var(--cy); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.primary { background: linear-gradient(120deg, #1c5cff, #03b7df); }
+.ghost { background: rgba(255,255,255,0.08); }
+.small { color: var(--muted); font-size: 0.84rem; }
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 10;
+}
+.overlay.active { display: flex; }
+.modal {
+  width: min(460px, 94vw);
+  background: #0f1931;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+.warning { width: min(600px, 95vw); }
+.check { display: flex; gap: 8px; align-items: center; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.hidden { display: none; }
+#notificationStack { display: grid; gap: 6px; margin-bottom: 8px; }
+.note {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.13);
+  background: rgba(16, 85, 72, 0.25);
+}
+.foot { text-align: center; padding: 10px; color: var(--muted); font-size: 0.84rem; }

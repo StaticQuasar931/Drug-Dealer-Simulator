@@ -1,0 +1,167 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drug Dealer Simulator 2.0.0</title>
+  <meta name="description" content="Fictional idle tycoon game with progression, districts, workers, and automation.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/ui.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-quality="balanced">
+  <div id="bgAura" aria-hidden="true"></div>
+
+  <div id="contentWarning" class="overlay active" role="dialog" aria-modal="true">
+    <div class="modal warning">
+      <h2>Content Warning</h2>
+      <p>This game is for content and entertainment purposes only.</p>
+      <p>This game contains fictional depictions of underground contraband markets and references to substances.</p>
+      <p>None of this content is intended to encourage real-world illegal activity or harm anyone.</p>
+      <p>Player discretion is advised.</p>
+      <button id="learnMoreBtn" class="ghost">Learn More</button>
+      <p id="learnMoreCopy" class="small hidden">This is a fictional tycoon simulation focused on economy, risk, and growth systems.</p>
+      <label class="check"><input id="dontShowAgain" type="checkbox"> Dont Show Again</label>
+      <div class="actions">
+        <button id="continueBtn" class="primary">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="title-wrap">
+      <img src="assets/banner.png" alt="Drug Dealer Simulator banner" class="banner">
+      <div>
+        <h1>Drug Dealer Simulator</h1>
+        <p>Version 2.0.0</p>
+      </div>
+    </div>
+    <div class="resources">
+      <div><span>Dirty</span><strong id="dirtyMoney">$0</strong></div>
+      <div><span>Clean</span><strong id="cleanMoney">$0</strong></div>
+      <div><span>Demand</span><strong id="demand">1.00x</strong></div>
+      <div><span>Heat</span><strong id="heatPercent">0%</strong></div>
+    </div>
+    <div class="btns">
+      <button id="settingsBtn">Settings</button>
+      <button id="saveBtn">Save</button>
+      <button id="loadBtn">Load</button>
+      <button id="slotBtn">Slot <span id="slotLabel">1</span></button>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="panel">
+      <h2>Production</h2>
+      <div id="productionList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Workers</h2>
+      <div id="workersList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Districts</h2>
+      <div id="districtList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Laundering Fronts</h2>
+      <div id="frontList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Upgrades</h2>
+      <div id="upgradesList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Heat and Events</h2>
+      <div class="meter"><div id="heatBar"></div></div>
+      <p id="heatStage">Suspicion</p>
+      <div id="eventBanner" class="event">No active event.</div>
+      <div class="quick-actions">
+        <button id="sellAllBtn" class="primary">Sell Inventory</button>
+        <button id="launderBtn" class="primary">Launder Dirty Money</button>
+        <button id="layLowBtn" class="ghost">Lay Low (20s)</button>
+      </div>
+      <div id="notificationStack"></div>
+      <div id="logPanel" class="log"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Achievements</h2>
+      <div id="achievementsList" class="cards"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Status</h2>
+      <p>Device: <span id="deviceType">Desktop</span></p>
+      <p>Graphics: <span id="graphicsMode">Balanced</span></p>
+      <p>Animation: <span id="animationValue">100%</span></p>
+      <p>Scale: <span id="scaleValue">100%</span></p>
+      <p>Music: <span id="musicValue">On</span></p>
+      <p>Total Sales: <span id="lifetimeSales">$0</span></p>
+      <p>Total Laundered: <span id="lifetimeLaundered">$0</span></p>
+    </section>
+  </main>
+
+  <div id="settingsModal" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Settings</h3>
+      <label>Graphics Quality
+        <select id="graphicsSelect">
+          <option value="low">Low</option>
+          <option value="balanced">Balanced</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+      <label>Animation Intensity
+        <input id="animationRange" type="range" min="0" max="100" step="5">
+      </label>
+      <label>Resolution Scaling
+        <input id="scaleRange" type="range" min="70" max="100" step="5">
+      </label>
+      <label>Sound Volume
+        <input id="volumeRange" type="range" min="0" max="100" step="1">
+      </label>
+      <label class="check"><input id="musicToggle" type="checkbox"> Music Toggle</label>
+      <div class="actions">
+        <button id="settingsClose" class="primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminPanel" class="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Admin Debug</h3>
+      <div class="quick-actions">
+        <button data-admin="dirty">+50000 Dirty</button>
+        <button data-admin="clean">+50000 Clean</button>
+        <button data-admin="cool">Heat -30</button>
+        <button data-admin="districts">Unlock Districts</button>
+        <button data-admin="achievements">Complete Achievements</button>
+        <button id="adminClose" class="ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">Fictional contraband tycoon simulation. No real-world guidance.</footer>
+
+  <script src="js/settings.js"></script>
+  <script src="js/antiCheat.js"></script>
+  <script src="js/economy.js"></script>
+  <script src="js/production.js"></script>
+  <script src="js/workers.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/laundering.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/saveSystem.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

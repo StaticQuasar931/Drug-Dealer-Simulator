@@ -1,0 +1,7 @@
+﻿[
+  {"id":"street_green","name":"Street Green","tier":1,"baseTime":4,"baseValue":18,"baseHeat":0.8,"quality":1,"emoji":"🍃","unlockCost":0},
+  {"id":"hydro_bud","name":"Hydro Bud","tier":2,"baseTime":8,"baseValue":55,"baseHeat":1.4,"quality":1,"emoji":"🌿","unlockCost":600},
+  {"id":"night_resin","name":"Night Resin","tier":3,"baseTime":14,"baseValue":160,"baseHeat":2.6,"quality":1,"emoji":"🧪","unlockCost":3500},
+  {"id":"pulse_tabs","name":"Pulse Tabs","tier":4,"baseTime":22,"baseValue":480,"baseHeat":4.4,"quality":1,"emoji":"💠","unlockCost":18000},
+  {"id":"ghost_crystal","name":"Ghost Crystal","tier":5,"baseTime":34,"baseValue":1450,"baseHeat":6.9,"quality":1,"emoji":"🔷","unlockCost":90000}
+]

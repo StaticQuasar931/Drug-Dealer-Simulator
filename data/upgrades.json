@@ -1,0 +1,7 @@
+﻿[
+  {"id":"mixing_tables","name":"Mixing Tables","desc":"+15% global production speed","baseCost":250,"costGrowth":1.58,"maxLevel":20,"effect":"prodSpeed","effectValue":0.15},
+  {"id":"sealed_kits","name":"Sealed Kits","desc":"+10% sale value","baseCost":520,"costGrowth":1.62,"maxLevel":25,"effect":"saleValue","effectValue":0.1},
+  {"id":"quiet_drops","name":"Quiet Drops","desc":"-8% heat generation","baseCost":760,"costGrowth":1.64,"maxLevel":20,"effect":"heatDown","effectValue":0.08},
+  {"id":"auto_dispatch","name":"Auto Dispatch","desc":"+1 auto batch for lowest unlocked item","baseCost":1200,"costGrowth":1.9,"maxLevel":30,"effect":"autoBatch","effectValue":1},
+  {"id":"premium_cut","name":"Premium Cut","desc":"+0.05 quality to all items","baseCost":2100,"costGrowth":1.95,"maxLevel":15,"effect":"quality","effectValue":0.05}
+]

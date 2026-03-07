@@ -1,0 +1,8 @@
+﻿[
+  {"id":"inspection_scare","name":"Inspection Scare","weight":20,"duration":75,"desc":"Local patrols rise.","heatDelta":12,"priceMod":0.95},
+  {"id":"market_boom","name":"Market Boom","weight":14,"duration":90,"desc":"Demand spikes city-wide.","heatDelta":4,"priceMod":1.2},
+  {"id":"supply_shortage","name":"Supply Shortage","weight":15,"duration":95,"desc":"Input scarcity raises prices.","heatDelta":6,"priceMod":1.14},
+  {"id":"security_breach","name":"Security Breach","weight":10,"duration":70,"desc":"Loose ends create risk.","heatDelta":16,"priceMod":0.92},
+  {"id":"big_party","name":"Big Party","weight":12,"duration":80,"desc":"Weekend demand surge.","heatDelta":8,"priceMod":1.16},
+  {"id":"supply_glut","name":"Supply Glut","weight":13,"duration":85,"desc":"Oversupply weakens margins.","heatDelta":-4,"priceMod":0.86}
+]
