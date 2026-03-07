@@ -1,6 +1,12 @@
 ﻿window.DDS = window.DDS || {};
 (function () {
   DDS.workers = {
+    unlockRequirement(workerId) {
+      return DDS.progression.workers[workerId] || 0;
+    },
+    isUnlocked(workerId) {
+      return DDS.state.lifetimeSales >= this.unlockRequirement(workerId);
+    },
     cost(workerId) {
       const st = DDS.state;
       const def = DDS.data.workers.find((w) => w.id === workerId);
@@ -9,6 +15,10 @@
     },
     hire(workerId) {
       const st = DDS.state;
+      if (!this.isUnlocked(workerId)) {
+        DDS.ui.notify('Worker not unlocked yet.', 'warn');
+        return;
+      }
       const price = this.cost(workerId);
       if (st.cleanMoney < price) {
         DDS.ui.notify('Not enough clean money.', 'warn');

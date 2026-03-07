@@ -1,8 +1,8 @@
 ﻿[
-  {"id":"dealers","name":"Dealers","baseCost":180,"costGrowth":1.22,"baseOutput":1,"desc":"Automates sales volume."},
-  {"id":"chemists","name":"Chemists","baseCost":420,"costGrowth":1.26,"baseOutput":1,"desc":"Boosts production efficiency."},
-  {"id":"smugglers","name":"Smugglers","baseCost":680,"costGrowth":1.31,"baseOutput":1,"desc":"Improves district route bonus."},
-  {"id":"accountants","name":"Accountants","baseCost":980,"costGrowth":1.34,"baseOutput":1,"desc":"Improves laundering conversion."},
-  {"id":"security","name":"Security","baseCost":760,"costGrowth":1.29,"baseOutput":1,"desc":"Reduces heat and raid losses."},
-  {"id":"hackers","name":"Hackers","baseCost":1400,"costGrowth":1.36,"baseOutput":1,"desc":"Improves event outcomes and market insight."}
+  {"id":"dealers","name":"Dealers","baseCost":120,"costGrowth":1.21,"baseOutput":1,"desc":"Automates low-tier production."},
+  {"id":"chemists","name":"Chemists","baseCost":520,"costGrowth":1.25,"baseOutput":1,"desc":"Increases production speed."},
+  {"id":"smugglers","name":"Smugglers","baseCost":1200,"costGrowth":1.29,"baseOutput":1,"desc":"Improves district route multiplier."},
+  {"id":"accountants","name":"Accountants","baseCost":1700,"costGrowth":1.32,"baseOutput":1,"desc":"Improves laundering efficiency."},
+  {"id":"security","name":"Security","baseCost":1500,"costGrowth":1.3,"baseOutput":1,"desc":"Reduces heat and raid impact."},
+  {"id":"hackers","name":"Hackers","baseCost":3400,"costGrowth":1.35,"baseOutput":1,"desc":"Improves market volatility handling."}
 ]

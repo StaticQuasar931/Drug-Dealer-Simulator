@@ -1,5 +1,17 @@
 ﻿.card .title { font-weight: 700; color: #d7e8ff; }
 .card .desc { color: #9cb2d9; font-size: 0.84rem; }
+.name-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.product-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+}
 .stat-chip {
   display: inline-flex;
   align-items: center;
@@ -20,6 +32,7 @@
   height: 100%;
   width: 0;
   background: linear-gradient(90deg, #18ffd0, #1f87ff);
+  transition: width 180ms linear;
 }
 .heat0 { color: #7fffb2; }
 .heat1 { color: #c4ff74; }

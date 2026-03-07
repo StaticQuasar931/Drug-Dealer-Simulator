@@ -19,6 +19,7 @@ body {
   background: radial-gradient(circle at 15% 10%, #1f355d 0%, var(--bg0) 40%), linear-gradient(130deg, #090c16, #111931);
   min-height: 100vh;
   transform-origin: top center;
+  transition: transform 220ms ease;
 }
 #bgAura {
   position: fixed;
@@ -37,7 +38,7 @@ body {
   backdrop-filter: blur(6px);
 }
 .title-wrap { display: flex; gap: 12px; align-items: center; }
-.banner { width: 100px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); }
+.banner { width: 100px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); object-fit: cover; }
 .title-wrap h1 { margin: 0; letter-spacing: 0.7px; font-size: 1.25rem; }
 .title-wrap p { margin: 2px 0 0; color: var(--muted); }
 .resources {
@@ -52,7 +53,7 @@ body {
   border: 1px solid rgba(255,255,255,0.08);
 }
 .resources span { display: block; color: var(--muted); font-size: 0.8rem; }
-.resources strong { color: var(--cy); font-size: 1rem; }
+.resources strong { color: var(--cy); font-size: 1rem; transition: color 180ms ease; }
 .btns { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 .board {
   display: grid;
@@ -74,7 +75,9 @@ body {
   background: rgba(8,13,24,0.65);
   border-radius: 10px;
   padding: 8px;
+  transition: border-color 180ms ease, transform 180ms ease;
 }
+.card:hover { border-color: rgba(41,247,211,0.55); transform: translateY(-1px); }
 .row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
 .meter {
   width: 100%;
@@ -87,6 +90,7 @@ body {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #2cff9a, #ffd84f, #ff5f63);
+  transition: width 180ms linear;
 }
 .log {
   height: 130px;
@@ -104,6 +108,7 @@ body {
   margin: 8px 0;
   background: rgba(255,255,255,0.04);
   color: #ffd8f5;
+  transition: border-color 240ms ease;
 }
 .quick-actions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin: 10px 0; }
 button {
@@ -113,9 +118,11 @@ button {
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
+  transition: transform 120ms ease, border-color 150ms ease, background-color 180ms ease;
 }
-button:hover { border-color: var(--cy); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+button:hover { border-color: var(--cy); transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .primary { background: linear-gradient(120deg, #1c5cff, #03b7df); }
 .ghost { background: rgba(255,255,255,0.08); }
 .small { color: var(--muted); font-size: 0.84rem; }

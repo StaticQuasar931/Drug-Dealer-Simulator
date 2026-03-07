@@ -16,8 +16,10 @@
     },
     applyToDocument() {
       const s = DDS.state.settings;
+      const animFactor = Math.max(0, Math.min(1.2, s.animationIntensity / 100));
       document.body.dataset.quality = s.graphicsQuality;
       document.body.style.transform = `scale(${s.resolutionScale / 100})`;
+      document.documentElement.style.setProperty('--anim-factor', String(animFactor));
       document.getElementById('graphicsMode').textContent = this.labelQuality(s.graphicsQuality);
       document.getElementById('animationValue').textContent = `${s.animationIntensity}%`;
       document.getElementById('scaleValue').textContent = `${s.resolutionScale}%`;
