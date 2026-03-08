@@ -1,8 +1,8 @@
-﻿window.DDS = window.DDS || {};
+window.DDS = window.DDS || {};
 (function () {
   const defaults = {
     graphicsQuality: 'balanced',
-    animationIntensity: 100,
+    animationIntensity: 90,
     resolutionScale: 100,
     soundVolume: 65,
     musicOn: true,
@@ -15,15 +15,20 @@
       return DDS.state.settings;
     },
     applyToDocument() {
-      const s = DDS.state.settings;
+      const s = DDS.state.settings || defaults;
       const animFactor = Math.max(0, Math.min(1.2, s.animationIntensity / 100));
+      const scale = Math.max(0.7, Math.min(1, s.resolutionScale / 100));
+
       document.body.dataset.quality = s.graphicsQuality;
-      document.body.style.transform = `scale(${s.resolutionScale / 100})`;
       document.documentElement.style.setProperty('--anim-factor', String(animFactor));
-      document.getElementById('graphicsMode').textContent = this.labelQuality(s.graphicsQuality);
-      document.getElementById('animationValue').textContent = `${s.animationIntensity}%`;
-      document.getElementById('scaleValue').textContent = `${s.resolutionScale}%`;
-      document.getElementById('musicValue').textContent = s.musicOn ? 'On' : 'Off';
+      document.documentElement.style.setProperty('--ui-scale', String(scale));
+
+      if ('zoom' in document.body.style) {
+        document.body.style.zoom = `${Math.round(scale * 100)}%`;
+      } else {
+        document.body.style.transform = `scale(${scale})`;
+        document.body.style.transformOrigin = 'top center';
+      }
     },
     labelQuality(v) {
       return v.charAt(0).toUpperCase() + v.slice(1);

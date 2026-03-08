@@ -1,13 +1,16 @@
-﻿@media (max-width: 1300px) {
+@media (max-width: 1300px) {
   .board { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
   .panel-street { grid-column: span 3; }
 }
+
 @media (max-width: 1020px) {
   .topbar { grid-template-columns: 1fr; }
   .board { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
   .panel-street { grid-column: span 2; }
-  .resources { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .resources { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .settings-subpanels { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 700px) {
   .board { grid-template-columns: 1fr; }
   .panel-street { grid-column: span 1; }
@@ -15,4 +18,7 @@
   .dealer-meta { grid-template-columns: 1fr; }
   .btns { justify-content: flex-start; flex-wrap: wrap; }
   .banner { width: 96px; height: 56px; }
+  .deal-grid { grid-template-columns: 1fr; }
+  .market-columns,
+  .market-row { grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr 1fr; }
 }

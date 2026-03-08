@@ -1,11 +1,18 @@
-﻿window.DDS = window.DDS || {};
+window.DDS = window.DDS || {};
 (function () {
   function el(id) { return document.getElementById(id); }
 
   DDS.ui = {
     nodes: {
-      production: {}, workers: {}, districts: {}, fronts: {}, upgrades: {}, achievements: {}
+      market: {},
+      production: {},
+      workers: {},
+      districts: {},
+      fronts: {},
+      upgrades: {},
+      achievements: {}
     },
+
     displayValues: {
       dirtyMoney: 0,
       cleanMoney: 0,
@@ -13,24 +20,49 @@
       lifetimeLaundered: 0
     },
 
+    dealOptionStamp: '',
+
+    resetDisplays() {
+      this.displayValues.dirtyMoney = DDS.state.dirtyMoney || 0;
+      this.displayValues.cleanMoney = DDS.state.cleanMoney || 0;
+      this.displayValues.lifetimeSales = DDS.state.lifetimeSales || 0;
+      this.displayValues.lifetimeLaundered = DDS.state.lifetimeLaundered || 0;
+    },
+
     bind() {
-      el('saveBtn').addEventListener('click', () => DDS.save.manualSave());
-      el('loadBtn').addEventListener('click', () => {
+      const saveBtn = el('saveBtn');
+      const loadBtn = el('loadBtn');
+      const slotSelect = el('slotSelect');
+      const settingsBtn = el('settingsBtn');
+      const settingsClose = el('settingsClose');
+
+      saveBtn.addEventListener('click', () => DDS.save.manualSave());
+      loadBtn.addEventListener('click', () => {
         DDS.save.loadOrFresh(DDS.state.currentSlot);
+        this.resetDisplays();
         this.buildStaticCards();
         this.notify(`Loaded slot ${DDS.state.currentSlot}.`);
         this.renderAll();
       });
-      el('slotSelect').addEventListener('change', (e) => DDS.save.switchToSlot(e.target.value));
-      el('settingsBtn').addEventListener('click', () => el('settingsModal').classList.add('active'));
-      el('settingsClose').addEventListener('click', () => el('settingsModal').classList.remove('active'));
+      slotSelect.addEventListener('change', (e) => DDS.save.switchToSlot(e.target.value));
+
+      settingsBtn.addEventListener('click', () => {
+        el('settingsModal').classList.add('active');
+        this.renderSettingsSnapshot();
+      });
+      settingsClose.addEventListener('click', () => el('settingsModal').classList.remove('active'));
 
       el('runDealBtn').addEventListener('click', () => DDS.game.runStreetDeal());
       el('sellAllBtn').addEventListener('click', () => DDS.production.sellAll());
       el('launderBtn').addEventListener('click', () => DDS.laundering.manualLaunder());
       el('layLowBtn').addEventListener('click', () => {
         DDS.state.layLowUntil = Date.now() + 20000;
-        this.notify('Laying low for 20s. Heat falls faster.');
+        this.notify('Laying low for 20 seconds. Heat rises slower.');
+      });
+
+      el('dealProductSelect').addEventListener('change', (e) => {
+        DDS.game.selectDealItem(e.target.value);
+        this.renderDealState();
       });
 
       el('graphicsSelect').addEventListener('change', (e) => {
@@ -50,7 +82,6 @@
       });
       el('musicToggle').addEventListener('change', (e) => {
         DDS.state.settings.musicOn = Boolean(e.target.checked);
-        DDS.settings.applyToDocument();
       });
 
       el('continueBtn').addEventListener('click', () => {
@@ -75,12 +106,16 @@
         if (input.length > seq.length) input.shift();
         if (seq.every((code, i) => input[i] === code)) {
           el('adminPanel').classList.add('active');
-          this.notify('Admin panel unlocked.');
+          this.notify('Debug panel available.');
         }
       });
+
+      document.querySelectorAll('[data-tip]').forEach((node) => node.classList.add('tip'));
     },
 
-    money(v) { return `$${Math.floor(v).toLocaleString('en-US')}`; },
+    money(v) {
+      return `$${Math.floor(v).toLocaleString('en-US')}`;
+    },
 
     smoothValue(key, target, rate) {
       const current = this.displayValues[key] || 0;
@@ -100,10 +135,10 @@
     notify(msg, type) {
       const n = document.createElement('div');
       n.className = 'note';
-      if (type === 'warn') n.style.background = 'rgba(145,35,53,0.34)';
+      if (type === 'warn') n.classList.add('warn-note');
       n.textContent = msg;
       el('notificationStack').prepend(n);
-      setTimeout(() => n.remove(), 3800);
+      setTimeout(() => n.remove(), 3600);
     },
 
     deviceLabel() {
@@ -127,19 +162,68 @@
     },
 
     buildStaticCards() {
+      this.buildMarketRows();
       this.buildProductionCards();
       this.buildWorkerCards();
       this.buildDistrictCards();
       this.buildFrontCards();
       this.buildUpgradeCards();
       this.buildAchievementCards();
+      this.updateDealSelector(true);
       this.updateSlotOptions();
+    },
+
+    buildMarketRows() {
+      const wrap = el('streetMarketList');
+      wrap.innerHTML = '';
+      this.nodes.market = {};
+
+      DDS.data.items.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'market-row';
+
+        const product = document.createElement('div');
+        product.className = 'market-product';
+        const icon = document.createElement('img');
+        icon.src = item.icon;
+        icon.alt = `${item.name} icon`;
+        icon.className = 'product-icon';
+        const txt = document.createElement('span');
+        txt.textContent = `${item.emoji} ${item.name}`;
+        product.append(icon, txt);
+
+        const cost = document.createElement('span');
+        const bulk = document.createElement('span');
+        const retail = document.createElement('span');
+
+        const buyGroup = document.createElement('div');
+        buyGroup.className = 'buy-group';
+        const buyOne = document.createElement('button');
+        buyOne.textContent = '+1';
+        buyOne.dataset.tip = 'Buy 1 unit of supply';
+        buyOne.className = 'tip';
+
+        const buyTen = document.createElement('button');
+        buyTen.textContent = '+10';
+        buyTen.dataset.tip = 'Buy 10 units with a bulk discount';
+        buyTen.className = 'tip';
+
+        buyGroup.append(buyOne, buyTen);
+        row.append(product, cost, bulk, retail, buyGroup);
+        wrap.appendChild(row);
+
+        buyOne.addEventListener('click', () => DDS.production.buySupply(item.id, 1));
+        buyTen.addEventListener('click', () => DDS.production.buySupply(item.id, 10));
+
+        this.nodes.market[item.id] = { row, product, txt, cost, bulk, retail, buyOne, buyTen };
+      });
     },
 
     buildProductionCards() {
       const wrap = el('productionList');
       wrap.innerHTML = '';
       this.nodes.production = {};
+
       DDS.data.items.forEach((item) => {
         const c = document.createElement('div');
         c.className = 'card';
@@ -147,28 +231,37 @@
         icon.className = 'product-icon';
         icon.src = item.icon;
         icon.alt = `${item.name} icon`;
+
         const name = document.createElement('div');
         name.className = 'title';
         const nameWrap = document.createElement('div');
         nameWrap.className = 'name-wrap';
         nameWrap.append(icon, name);
+
         const stock = document.createElement('span');
         stock.className = 'stat-chip';
+
         const row = document.createElement('div');
         row.className = 'row';
         row.append(nameWrap, stock);
+
         const stats = document.createElement('div');
         stats.className = 'desc';
-        const market = document.createElement('div');
-        market.className = 'desc';
+        const lock = document.createElement('div');
+        lock.className = 'desc';
+
         const progWrap = document.createElement('div');
         progWrap.className = 'progress';
         const prog = document.createElement('div');
         progWrap.appendChild(prog);
+
         const btn = document.createElement('button');
-        c.append(row, stats, market, progWrap, btn);
+        btn.className = 'tip';
+
+        c.append(row, stats, lock, progWrap, btn);
         wrap.appendChild(c);
-        this.nodes.production[item.id] = { c, name, stock, stats, market, prog, btn, unlock: null };
+
+        this.nodes.production[item.id] = { c, name, stock, stats, lock, prog, btn };
       });
     },
 
@@ -177,17 +270,36 @@
       wrap.innerHTML = '';
       this.nodes.workers = {};
       DDS.data.workers.forEach((w) => {
-        const c = document.createElement('div'); c.className = 'card';
-        const row = document.createElement('div'); row.className = 'row';
-        const left = document.createElement('div'); left.className = 'worker-row';
-        const face = document.createElement('img'); face.className = 'worker-face'; face.src = w.portrait; face.alt = `${w.name} portrait`;
-        const title = document.createElement('div'); title.className = 'title'; title.textContent = w.name;
+        const c = document.createElement('div');
+        c.className = 'card';
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        const left = document.createElement('div');
+        left.className = 'worker-row';
+        const face = document.createElement('img');
+        face.className = 'worker-face';
+        face.src = w.portrait;
+        face.alt = `${w.name} portrait`;
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = w.name;
         left.append(face, title);
-        const chip = document.createElement('span'); chip.className = 'stat-chip';
+
+        const chip = document.createElement('span');
+        chip.className = 'stat-chip';
         row.append(left, chip);
-        const desc = document.createElement('div'); desc.className = 'desc'; desc.textContent = w.desc;
-        const lock = document.createElement('div'); lock.className = 'desc';
+
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = w.desc;
+
+        const lock = document.createElement('div');
+        lock.className = 'desc';
+
         const btn = document.createElement('button');
+        btn.className = 'tip';
+
         c.append(row, desc, lock, btn);
         wrap.appendChild(c);
         this.nodes.workers[w.id] = { chip, lock, btn };
@@ -199,10 +311,27 @@
       wrap.innerHTML = '';
       this.nodes.districts = {};
       DDS.data.districts.forEach((d) => {
-        const c = document.createElement('div'); c.className = 'card';
-        c.innerHTML = `<div class="row"><div class="title">${d.name}</div><span class="stat-chip">x${d.saleBonus.toFixed(2)}</span></div><div class="desc">${d.desc}</div>`;
+        const c = document.createElement('div');
+        c.className = 'card';
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = d.name;
+        const chip = document.createElement('span');
+        chip.className = 'stat-chip';
+        chip.textContent = `x${d.saleBonus.toFixed(2)}`;
+        row.append(title, chip);
+
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = d.desc;
+
         const btn = document.createElement('button');
-        c.appendChild(btn);
+        btn.className = 'tip';
+
+        c.append(row, desc, btn);
         wrap.appendChild(c);
         this.nodes.districts[d.id] = { btn };
       });
@@ -213,11 +342,30 @@
       wrap.innerHTML = '';
       this.nodes.fronts = {};
       DDS.laundering.fronts.forEach((f) => {
-        const c = document.createElement('div'); c.className = 'card';
-        c.innerHTML = `<div class="row"><div class="title">${f.name}</div><span class="stat-chip">${f.efficiency}</span></div><div class="desc">Rate ${f.rate}/s | Heat relief ${f.heatDrop}</div><div class="desc">${f.desc}</div>`;
-        const lock = document.createElement('div'); lock.className = 'desc';
+        const c = document.createElement('div');
+        c.className = 'card';
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = f.name;
+        const chip = document.createElement('span');
+        chip.className = 'stat-chip';
+        chip.textContent = `${Math.round(f.efficiency * 100)}%`;
+        row.append(title, chip);
+
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = `Rate ${f.rate}/s | Heat relief ${f.heatDrop}`;
+
+        const lock = document.createElement('div');
+        lock.className = 'desc';
+
         const btn = document.createElement('button');
-        c.append(lock, btn);
+        btn.className = 'tip';
+
+        c.append(row, desc, lock, btn);
         wrap.appendChild(c);
         this.nodes.fronts[f.id] = { lock, btn };
       });
@@ -227,15 +375,29 @@
       const wrap = el('upgradesList');
       wrap.innerHTML = '';
       this.nodes.upgrades = {};
+
       DDS.data.upgrades.forEach((u) => {
-        const c = document.createElement('div'); c.className = 'card';
-        const head = document.createElement('div'); head.className = 'row';
-        const title = document.createElement('div'); title.className = 'title'; title.textContent = u.name;
-        const level = document.createElement('span'); level.className = 'stat-chip';
+        const c = document.createElement('div');
+        c.className = 'card';
+        const head = document.createElement('div');
+        head.className = 'row';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = u.name;
+        const level = document.createElement('span');
+        level.className = 'stat-chip';
         head.append(title, level);
-        const desc = document.createElement('div'); desc.className = 'desc'; desc.textContent = u.desc;
-        const lock = document.createElement('div'); lock.className = 'desc';
+
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = u.desc;
+
+        const lock = document.createElement('div');
+        lock.className = 'desc';
+
         const btn = document.createElement('button');
+        btn.className = 'tip';
+
         c.append(head, desc, lock, btn);
         wrap.appendChild(c);
         this.nodes.upgrades[u.id] = { level, lock, btn };
@@ -243,20 +405,58 @@
     },
 
     buildAchievementCards() {
-      const wrap = el('achievementsList');
+      const wrap = el('settingsAchievementsList');
       wrap.innerHTML = '';
       this.nodes.achievements = {};
+
       DDS.data.achievements.forEach((a) => {
-        const c = document.createElement('div'); c.className = 'card';
-        const row = document.createElement('div'); row.className = 'row';
-        const title = document.createElement('div'); title.className = 'title'; title.textContent = a.name;
-        const chip = document.createElement('span'); chip.className = 'stat-chip';
+        const c = document.createElement('div');
+        c.className = 'card';
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = a.name;
+        const chip = document.createElement('span');
+        chip.className = 'stat-chip';
         row.append(title, chip);
-        const desc = document.createElement('div'); desc.className = 'desc'; desc.textContent = a.desc;
+
+        const desc = document.createElement('div');
+        desc.className = 'desc';
+        desc.textContent = a.desc;
+
         c.append(row, desc);
         wrap.appendChild(c);
-        this.nodes.achievements[a.id] = { chip };
+        this.nodes.achievements[a.id] = { c, chip };
       });
+    },
+
+    updateDealSelector(force) {
+      const select = el('dealProductSelect');
+      const items = DDS.data.items.filter((item) => DDS.production.isMarketUnlocked(item.id));
+      const stamp = items.map((x) => x.id).join('|');
+
+      if (force || stamp !== this.dealOptionStamp) {
+        const selectedBefore = DDS.state.dealer.selectedItemId;
+        select.innerHTML = '';
+
+        items.forEach((item) => {
+          const op = document.createElement('option');
+          op.value = item.id;
+          op.textContent = `${item.emoji} ${item.name}`;
+          select.appendChild(op);
+        });
+
+        if (items.length === 0) return;
+        const stillValid = items.some((item) => item.id === selectedBefore);
+        DDS.state.dealer.selectedItemId = stillValid ? selectedBefore : items[0].id;
+        this.dealOptionStamp = stamp;
+      }
+
+      if (DDS.state.dealer.selectedItemId) {
+        select.value = DDS.state.dealer.selectedItemId;
+      }
     },
 
     applyPanelState(panelId) {
@@ -293,155 +493,319 @@
           upgrades: 'Upgrades',
           events: 'Market Events'
         };
-        el('dealerHint').textContent = `Current focus: build street cash. Next unlock: ${labelMap[name]} at ${this.money(cost)} lifetime sales.`;
+        el('dealerHint').textContent = `Focus now: buy stock, run deals, wash cash. Next unlock: ${labelMap[name]} at ${this.money(cost)} sales.`;
       } else {
-        el('dealerHint').textContent = 'All systems unlocked. Focus on efficiency and risk management.';
+        el('dealerHint').textContent = 'All systems unlocked. Focus on efficiency and heat control.';
       }
 
-      el('productionHint').textContent = 'Build inventory lines from weed to advanced products.';
-      el('workersHint').textContent = 'Recruit a specialized crew to automate and stabilize operations.';
-      el('districtHint').textContent = 'Unlock districts for stronger route multipliers.';
-      el('frontHint').textContent = 'Use fronts to convert dirty cash with different tradeoffs.';
-      el('upgradeHint').textContent = 'Upgrade carefully to scale without overheating.';
+      el('productionHint').textContent = 'Own production lines reduce dependence on market supply.';
+      el('workersHint').textContent = 'Hire specialists to automate, protect, and scale your operation.';
+      el('districtHint').textContent = 'District routes increase sale multipliers and add risk.';
+      el('frontHint').textContent = 'Each front has different laundering speed and efficiency.';
+      el('upgradeHint').textContent = 'Upgrade carefully to boost profit without over-heating.';
 
       Object.keys(st.panelState).forEach((panelId) => this.applyPanelState(panelId));
 
-      const visibleSystemPanels = document.querySelectorAll('[data-system]:not(.hidden-panel)').length;
+      const unlockedCount = Object.values(st.systems).filter(Boolean).length;
       const board = el('boardRoot');
-      board.classList.toggle('early-layout', visibleSystemPanels <= 1);
-
+      if (unlockedCount <= 1) {
+        board.dataset.stage = 'starter';
+      } else if (unlockedCount <= 3) {
+        board.dataset.stage = 'growth';
+      } else {
+        board.dataset.stage = 'empire';
+      }
     },
 
     renderAll() {
       const st = DDS.state;
+
       const dirtyDisplay = this.smoothValue('dirtyMoney', st.dirtyMoney, 0.3);
       const cleanDisplay = this.smoothValue('cleanMoney', st.cleanMoney, 0.3);
-      const salesDisplay = this.smoothValue('lifetimeSales', st.lifetimeSales, 0.2);
-      const launderDisplay = this.smoothValue('lifetimeLaundered', st.lifetimeLaundered, 0.2);
 
       el('dirtyMoney').textContent = this.money(dirtyDisplay);
       el('cleanMoney').textContent = this.money(cleanDisplay);
       el('demand').textContent = `${st.demandIndex.toFixed(2)}x`;
       el('heatPercent').textContent = `${st.heat.toFixed(1)}%`;
+
       el('heatBar').style.width = `${Math.min(100, st.heat)}%`;
       el('heatStage').textContent = DDS.game.heatStage();
       el('heatStage').className = DDS.game.heatClass();
-      el('eventBanner').textContent = st.activeEvent ? `${st.activeEvent.name}: ${st.activeEvent.desc}` : 'No active event.';
-      el('deviceType').textContent = this.deviceLabel();
-      el('lifetimeSales').textContent = this.money(salesDisplay);
-      el('lifetimeLaundered').textContent = this.money(launderDisplay);
-      el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank}`;
+      el('eventBanner').textContent = st.activeEvent
+        ? `${st.activeEvent.name}: ${st.activeEvent.desc}`
+        : 'No active event.';
 
-      const cooldownMs = Math.max(0, st.dealer.cooldownUntil - Date.now());
-      el('dealerCooldown').textContent = cooldownMs > 0
-        ? `Deal Cooldown: ${(cooldownMs / 1000).toFixed(1)}s`
-        : 'Deal Cooldown: Ready';
-      el('runDealBtn').disabled = cooldownMs > 0;
-
-      const progressMax = 450000;
+      const progressMax = 500000;
       const pct = Math.min(100, (st.lifetimeSales / progressMax) * 100);
       el('slotProgressBar').style.width = `${pct}%`;
       el('slotProgressText').textContent = `Slot ${st.currentSlot} progression: ${pct.toFixed(1)}%`;
 
       this.updateSystemVisibility();
       this.updateSlotOptions();
+      this.updateDealSelector(false);
+      this.renderDealState();
 
+      this.renderMarket();
       this.renderProduction();
       this.renderWorkers();
       this.renderDistricts();
       this.renderFronts();
       this.renderUpgrades();
       this.renderAchievements();
+      this.renderSettingsSnapshot();
+    },
+
+    renderDealState() {
+      const st = DDS.state;
+      const runBtn = el('runDealBtn');
+      const timer = el('runDealTimer');
+      const prog = el('runDealProgress');
+
+      const selected = DDS.data.items.find((x) => x.id === st.dealer.selectedItemId) || DDS.data.items[0];
+      const stock = st.inventory[selected.id] || 0;
+
+      const now = Date.now();
+      const cooldownMs = Math.max(0, st.dealer.cooldownUntil - now);
+      const totalMs = Math.max(1, st.dealer.cooldownDurationMs || 1);
+      const fill = cooldownMs > 0
+        ? Math.max(0, Math.min(100, ((totalMs - cooldownMs) / totalMs) * 100))
+        : 0;
+
+      if (cooldownMs > 0) {
+        timer.textContent = `${(cooldownMs / 1000).toFixed(1)}s cooldown`;
+      } else {
+        timer.textContent = stock > 0 ? `Ready | Stock ${stock}` : 'Need stock';
+      }
+      prog.style.width = `${fill}%`;
+
+      runBtn.disabled = cooldownMs > 0 || stock <= 0;
+      runBtn.dataset.tip = `Sell 1 ${selected.name} from inventory. Current stock: ${stock}`;
+
+      el('dealerCooldown').textContent = cooldownMs > 0
+        ? `Deal Cooldown: ${(cooldownMs / 1000).toFixed(1)}s`
+        : `Deal Cooldown: Ready (${selected.name})`;
+      el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank}`;
+    },
+
+    renderMarket() {
+      const st = DDS.state;
+      let lockedPreviewShown = false;
+
+      DDS.data.items.forEach((item) => {
+        const n = this.nodes.market[item.id];
+        if (!n) return;
+
+        const unlockSales = DDS.production.marketUnlockSales(item.id);
+        const unlocked = DDS.production.isMarketUnlocked(item.id);
+
+        if (!unlocked && lockedPreviewShown) {
+          n.row.classList.add('hidden-row');
+          return;
+        }
+
+        n.row.classList.remove('hidden-row');
+
+        if (!unlocked) {
+          lockedPreviewShown = true;
+          n.cost.textContent = 'Locked';
+          n.bulk.textContent = this.money(unlockSales);
+          n.retail.textContent = '--';
+          n.buyOne.disabled = true;
+          n.buyTen.disabled = true;
+          n.product.dataset.tip = `Unlocks at ${this.money(unlockSales)} lifetime sales.`;
+          n.product.classList.add('tip');
+          return;
+        }
+
+        const unit = DDS.economy.supplyCost(item, 1);
+        const bulk = DDS.economy.supplyCost(item, 10);
+        const retail = DDS.economy.unitPrice(item);
+
+        n.cost.textContent = this.money(unit);
+        n.bulk.textContent = this.money(bulk);
+        n.retail.textContent = this.money(retail);
+
+        n.buyOne.disabled = st.cleanMoney < unit;
+        n.buyTen.disabled = st.cleanMoney < bulk;
+
+        n.product.dataset.tip = `Stock: ${st.inventory[item.id] || 0} | Tier ${item.tier} | Heat ${item.baseHeat.toFixed(2)}`;
+        n.product.classList.add('tip');
+      });
     },
 
     renderProduction() {
-      DDS.data.items.forEach((item) => {
-        const node = this.nodes.production[item.id];
-        const unlocked = DDS.state.unlockedItems[item.id];
-        node.name.textContent = `${item.emoji} ${item.name}`;
-        node.stock.textContent = `${DDS.state.inventory[item.id] || 0} in stock`;
-        node.stats.textContent = `Time ${item.baseTime}s | Base ${this.money(item.baseValue)} | Heat ${item.baseHeat.toFixed(2)}`;
-        node.market.textContent = `Market ${this.money(DDS.economy.unitPrice(item))}`;
-        node.prog.style.width = `${Math.min(100, (DDS.state.prodProgress[item.id] || 0) * 100)}%`;
+      const st = DDS.state;
+      let lockedPreviewShown = false;
 
-        if (node.unlock !== unlocked) {
-          node.btn.replaceWith(node.btn.cloneNode(true));
-          node.btn = node.c.querySelector('button:last-child');
-          if (unlocked) {
-            node.btn.textContent = 'Produce';
-            node.btn.addEventListener('click', () => DDS.production.clickProduce(item.id));
-          } else {
-            node.btn.textContent = `Unlock ${this.money(item.unlockCost)}`;
-            node.btn.addEventListener('click', () => DDS.game.unlockItem(item.id));
-          }
-          node.unlock = unlocked;
-        } else if (!unlocked) {
-          node.btn.textContent = `Unlock ${this.money(item.unlockCost)}`;
+      DDS.data.items.forEach((item) => {
+        const n = this.nodes.production[item.id];
+        if (!n) return;
+
+        const unlockedLine = !!st.unlockedItems[item.id];
+        const canUnlockLine = DDS.production.canUnlockProductionLine(item.id);
+        const unlockSales = DDS.production.productionUnlockSales(item.id);
+
+        if (!unlockedLine && !canUnlockLine && lockedPreviewShown) {
+          n.c.classList.add('hidden-row');
+          return;
         }
-        node.btn.disabled = !DDS.state.systems.production;
+
+        n.c.classList.remove('hidden-row');
+        if (!unlockedLine && !canUnlockLine) lockedPreviewShown = true;
+
+        n.name.textContent = `${item.emoji} ${item.name}`;
+        n.stock.textContent = `${st.inventory[item.id] || 0} in stock`;
+        n.stats.textContent = `Line time ${item.baseTime}s | Base ${this.money(item.baseValue)} | Heat ${item.baseHeat.toFixed(2)}`;
+        n.prog.style.width = `${Math.min(100, (st.prodProgress[item.id] || 0) * 100)}%`;
+
+        if (!st.systems.production) {
+          n.lock.textContent = 'Unlock the Products system first.';
+          n.btn.textContent = 'Locked';
+          n.btn.disabled = true;
+          n.btn.onclick = null;
+          n.btn.dataset.tip = 'Reach system unlock threshold to access production.';
+          return;
+        }
+
+        if (unlockedLine) {
+          n.lock.textContent = 'Production line active.';
+          n.btn.textContent = 'Produce +1';
+          n.btn.disabled = false;
+          n.btn.onclick = () => DDS.production.clickProduce(item.id);
+          n.btn.dataset.tip = `Manual production for ${item.name}.`;
+          return;
+        }
+
+        if (!canUnlockLine) {
+          n.lock.textContent = `Need ${this.money(unlockSales)} lifetime sales.`;
+          n.btn.textContent = 'Locked';
+          n.btn.disabled = true;
+          n.btn.onclick = null;
+          n.btn.dataset.tip = 'Keep selling street inventory to unlock this line.';
+          return;
+        }
+
+        n.lock.textContent = `Unlock line for ${this.money(item.unlockCost)} clean money.`;
+        n.btn.textContent = `Unlock ${this.money(item.unlockCost)}`;
+        n.btn.disabled = st.cleanMoney < item.unlockCost;
+        n.btn.onclick = () => DDS.game.unlockItem(item.id);
+        n.btn.dataset.tip = `Unlocks automated and manual production access for ${item.name}.`;
       });
     },
 
     renderWorkers() {
       DDS.data.workers.forEach((w) => {
         const n = this.nodes.workers[w.id];
+        if (!n) return;
+
         const req = DDS.workers.unlockRequirement(w.id);
         const unlocked = DDS.workers.isUnlocked(w.id);
         const count = DDS.state.workers[w.id] || 0;
         const cost = DDS.workers.cost(w.id);
+
         n.chip.textContent = `${count}`;
-        n.lock.textContent = unlocked ? 'Unlocked' : `Unlock at ${this.money(req)} lifetime sales`;
+        n.lock.textContent = unlocked
+          ? 'Unlocked'
+          : `Unlock at ${this.money(req)} lifetime sales`;
         n.btn.textContent = `Hire ${this.money(cost)}`;
-        n.btn.disabled = !unlocked;
+        n.btn.disabled = !unlocked || DDS.state.cleanMoney < cost;
         n.btn.onclick = () => DDS.workers.hire(w.id);
+        n.btn.dataset.tip = w.desc;
       });
     },
 
     renderDistricts() {
       DDS.data.districts.forEach((d) => {
         const n = this.nodes.districts[d.id];
+        if (!n) return;
+
         const has = DDS.state.unlockedDistricts.includes(d.id);
         n.btn.textContent = has ? 'Owned' : `Unlock ${this.money(d.unlockCost)}`;
-        n.btn.disabled = has || !DDS.state.systems.districts;
+        n.btn.disabled = has || !DDS.state.systems.districts || DDS.state.cleanMoney < d.unlockCost;
         n.btn.onclick = () => DDS.map.unlock(d.id);
+        n.btn.dataset.tip = `${d.desc} | Sale x${d.saleBonus.toFixed(2)} | Heat x${d.heatMod.toFixed(2)}`;
       });
     },
 
     renderFronts() {
       DDS.laundering.fronts.forEach((f) => {
         const n = this.nodes.fronts[f.id];
+        if (!n) return;
+
         const has = !!DDS.state.frontsOwned[f.id];
         const unlocked = DDS.laundering.isUnlocked(f.id);
         const req = DDS.laundering.unlockRequirement(f.id);
-        n.lock.textContent = unlocked ? 'Unlocked' : `Unlock at ${this.money(req)} lifetime sales`;
+
+        n.lock.textContent = unlocked
+          ? f.desc
+          : `Unlock at ${this.money(req)} lifetime sales`;
         n.btn.textContent = has ? 'Owned' : `Buy ${this.money(f.cost)}`;
-        n.btn.disabled = has || !unlocked;
+        n.btn.disabled = has || !unlocked || DDS.state.cleanMoney < f.cost;
         n.btn.onclick = () => DDS.laundering.buy(f.id);
+        n.btn.dataset.tip = `Rate ${f.rate}/s | Efficiency ${Math.round(f.efficiency * 100)}% | Heat relief ${f.heatDrop}`;
       });
     },
 
     renderUpgrades() {
       DDS.data.upgrades.forEach((u) => {
         const n = this.nodes.upgrades[u.id];
+        if (!n) return;
+
         const level = DDS.state.upgrades[u.id] || 0;
         const cost = Math.floor(u.baseCost * Math.pow(u.costGrowth, level));
         const req = DDS.progression.upgrades[u.id] || 0;
         const unlocked = DDS.state.systems.upgrades && DDS.state.lifetimeSales >= req;
+
         n.level.textContent = `Lv ${level}/${u.maxLevel}`;
-        n.lock.textContent = unlocked ? 'Unlocked' : `Unlock at ${this.money(req)} lifetime sales`;
+        n.lock.textContent = unlocked
+          ? u.desc
+          : `Unlock at ${this.money(req)} lifetime sales`;
         n.btn.textContent = level >= u.maxLevel ? 'Maxed' : `Upgrade ${this.money(cost)}`;
-        n.btn.disabled = level >= u.maxLevel || !unlocked;
+        n.btn.disabled = level >= u.maxLevel || !unlocked || DDS.state.cleanMoney < cost;
         n.btn.onclick = () => DDS.game.buyUpgrade(u.id);
+        n.btn.dataset.tip = u.desc;
       });
     },
 
     renderAchievements() {
       DDS.data.achievements.forEach((a) => {
+        const node = this.nodes.achievements[a.id];
+        if (!node) return;
+
         const done = DDS.state.completedAchievements.includes(a.id);
-        this.nodes.achievements[a.id].chip.textContent = done ? 'Done' : 'Open';
+        node.chip.textContent = done ? 'Done' : 'Open';
+        node.c.classList.toggle('achievement-done', done);
+      });
+    },
+
+    renderSettingsSnapshot() {
+      const st = DDS.state;
+      const host = el('settingsStatusList');
+      host.innerHTML = '';
+
+      const rows = [
+        ['Device', this.deviceLabel()],
+        ['Lifetime Sales', this.money(st.lifetimeSales)],
+        ['Total Laundered', this.money(st.lifetimeLaundered)],
+        ['Street Deals', `${st.streetDeals}`],
+        ['Weed Units Sold', `${st.weedSold}`],
+        ['Workers', `${DDS.workers.totalCount()}`],
+        ['Districts', `${st.unlockedDistricts.length}/${DDS.data.districts.length}`],
+        ['Heat Stage', DDS.game.heatStage()],
+        ['Graphics', DDS.settings.labelQuality(st.settings.graphicsQuality)]
+      ];
+
+      rows.forEach(([k, v]) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        const key = document.createElement('span');
+        key.className = 'snap-key';
+        key.textContent = k;
+        const val = document.createElement('strong');
+        val.textContent = v;
+        row.append(key, val);
+        host.appendChild(row);
       });
     }
   };
 })();
-
-

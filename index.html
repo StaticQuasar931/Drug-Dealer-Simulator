@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-<html lang="en">
+<html lang="en" data-scheme="oakline-473">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
-<body data-quality="balanced">
+<body data-quality="balanced" data-layout-sign="v203r3">
   <div id="bgAura" aria-hidden="true"></div>
 
   <div id="contentWarning" class="overlay active" role="dialog" aria-modal="true">
@@ -61,23 +61,45 @@
     </div>
   </header>
 
-  <main class="board" id="boardRoot">
+  <main class="board" id="boardRoot" data-stage="starter">
     <section class="panel panel-street" data-panel="street">
       <div class="panel-head static-head">
         <h2>Street Operation</h2>
       </div>
-      <p class="panel-note" id="dealerHint">Start simple. Work the school area, stack street sales, then scale.</p>
+      <p class="panel-note" id="dealerHint">Start simple. Buy stock, run deals, wash cash, scale up.</p>
 
-      <div class="quick-actions">
-        <button id="runDealBtn" class="primary">Run Street Deal</button>
-        <button id="layLowBtn" class="ghost">Lay Low (20s)</button>
-        <button id="sellAllBtn" class="ghost">Sell Inventory</button>
-        <button id="launderBtn" class="ghost">Manual Wash</button>
+      <div class="deal-grid">
+        <label class="deal-select-wrap">Deal Product
+          <select id="dealProductSelect" title="Choose which stocked product to sell next"></select>
+        </label>
+        <button id="runDealBtn" class="primary" data-tip="Sells 1 unit of the selected stocked product">
+          <span class="btn-main">Run Street Deal</span>
+          <span class="btn-sub" id="runDealTimer">Ready</span>
+          <span class="btn-progress" id="runDealProgress"></span>
+        </button>
+      </div>
+
+      <div class="quick-actions compact-actions">
+        <button id="layLowBtn" class="ghost" data-tip="Temporarily reduce heat growth">Lay Low (20s)</button>
+        <button id="sellAllBtn" class="ghost" data-tip="Sell every stocked product instantly">Sell Inventory</button>
+        <button id="launderBtn" class="ghost" data-tip="Convert a small batch of dirty cash to clean cash">Manual Wash</button>
       </div>
 
       <div class="dealer-meta">
         <p id="dealerCooldown">Deal Cooldown: Ready</p>
         <p id="dealerRank">Dealer Rank: 1</p>
+      </div>
+
+      <div class="market-wrap">
+        <div class="market-head">Street Market</div>
+        <div class="market-columns">
+          <span>Product</span>
+          <span>Cost</span>
+          <span>Bulk</span>
+          <span>Retail</span>
+          <span>Buy</span>
+        </div>
+        <div id="streetMarketList" class="market-list"></div>
       </div>
 
       <div class="slot-progress-wrap">
@@ -143,52 +165,43 @@
       <p id="heatStage">Suspicion</p>
       <div id="eventBanner" class="event">No active event.</div>
     </section>
-
-    <section class="panel" data-panel="achievements">
-      <div class="panel-head">
-        <h2>Achievements</h2>
-        <button class="panel-toggle" data-toggle-panel="achievements" aria-expanded="true">Hide</button>
-      </div>
-      <div id="achievementsList" class="cards"></div>
-    </section>
-
-    <section class="panel" data-panel="status">
-      <div class="panel-head">
-        <h2>Status</h2>
-        <button class="panel-toggle" data-toggle-panel="status" aria-expanded="true">Hide</button>
-      </div>
-      <div class="status-grid">
-        <p>Device: <span id="deviceType">Desktop</span></p>
-        <p>Graphics: <span id="graphicsMode">Balanced</span></p>
-        <p>Animation: <span id="animationValue">100%</span></p>
-        <p>Scale: <span id="scaleValue">100%</span></p>
-        <p>Music: <span id="musicValue">On</span></p>
-        <p>Total Sales: <span id="lifetimeSales">$0</span></p>
-        <p>Total Laundered: <span id="lifetimeLaundered">$0</span></p>
-      </div>
-    </section>
   </main>
 
   <div id="settingsModal" class="overlay" role="dialog" aria-modal="true">
-    <div class="modal">
-      <h3>Settings</h3>
-      <label>Graphics Quality
-        <select id="graphicsSelect">
-          <option value="low">Low</option>
-          <option value="balanced">Balanced</option>
-          <option value="high">High</option>
-        </select>
-      </label>
-      <label>Animation Intensity
-        <input id="animationRange" type="range" min="0" max="100" step="5">
-      </label>
-      <label>Resolution Scaling
-        <input id="scaleRange" type="range" min="70" max="100" step="5">
-      </label>
-      <label>Sound Volume
-        <input id="volumeRange" type="range" min="0" max="100" step="1">
-      </label>
-      <label class="check"><input id="musicToggle" type="checkbox"> Music Toggle</label>
+    <div class="modal settings-modal">
+      <h3>Settings and Run Details</h3>
+
+      <div class="settings-grid">
+        <label>Graphics Quality
+          <select id="graphicsSelect">
+            <option value="low">Low</option>
+            <option value="balanced">Balanced</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+        <label>Animation Intensity
+          <input id="animationRange" type="range" min="0" max="100" step="5">
+        </label>
+        <label>Resolution Scaling
+          <input id="scaleRange" type="range" min="70" max="100" step="5">
+        </label>
+        <label>Sound Volume
+          <input id="volumeRange" type="range" min="0" max="100" step="1">
+        </label>
+        <label class="check"><input id="musicToggle" type="checkbox"> Music Toggle</label>
+      </div>
+
+      <div class="settings-subpanels">
+        <section>
+          <h4>Run Snapshot</h4>
+          <div id="settingsStatusList" class="mini-grid"></div>
+        </section>
+        <section>
+          <h4>Achievements</h4>
+          <div id="settingsAchievementsList" class="cards"></div>
+        </section>
+      </div>
+
       <div class="actions">
         <button id="settingsClose" class="primary">Close</button>
       </div>

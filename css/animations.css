@@ -1,13 +1,37 @@
-﻿@keyframes fadeSlideIn {
-  from { transform: translateY(6px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes fadeSlideIn {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
-@keyframes softPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.05); }
+
+@keyframes glowShift {
+  0% { box-shadow: 0 0 0 rgba(48, 210, 166, 0); }
+  50% { box-shadow: 0 0 12px rgba(48, 210, 166, 0.08); }
+  100% { box-shadow: 0 0 0 rgba(48, 210, 166, 0); }
 }
-.note { animation: fadeSlideIn calc(220ms * var(--anim-factor, 1)) ease; }
-.event { animation: softPulse calc(6s / var(--anim-factor, 1)) ease-in-out infinite; }
-.panel { transition: transform 180ms ease, opacity 180ms ease; }
-.panel.hidden-panel { opacity: 0; transform: translateY(4px); }
-body[data-quality="low"] .event { animation: none; }
+
+.note {
+  animation: fadeSlideIn calc(220ms * var(--anim-factor, 1)) ease;
+}
+
+.event {
+  animation: glowShift calc(9s / var(--anim-factor, 1)) ease-in-out infinite;
+}
+
+.panel {
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.panel.hidden-panel {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+body[data-quality='low'] .event {
+  animation: none;
+}

@@ -1,9 +1,10 @@
-﻿window.DDS = window.DDS || {};
+window.DDS = window.DDS || {};
 (function () {
   DDS.save = {
     key(slot) {
       return `dds2_save_slot_${slot}`;
     },
+
     manualSave() {
       const st = DDS.state;
       st.lastSaveTime = Date.now();
@@ -11,15 +12,18 @@
       localStorage.setItem(this.key(st.currentSlot), JSON.stringify(st));
       DDS.ui.notify(`Saved slot ${st.currentSlot}.`);
     },
+
     autoSave() {
       const st = DDS.state;
       st.lastSaveTime = Date.now();
       st.lastTrustedTime = Date.now();
       localStorage.setItem(this.key(st.currentSlot), JSON.stringify(st));
     },
+
     load(slot) {
       const raw = localStorage.getItem(this.key(slot));
       if (!raw) return false;
+
       const loaded = JSON.parse(raw);
       const safeOffline = DDS.antiCheat.computeSafeOfflineSeconds(Date.now(), loaded.lastSaveTime, loaded.lastTrustedTime);
 
@@ -41,21 +45,26 @@
       DDS.game.simulateOffline(safeOffline);
       return true;
     },
+
     loadOrFresh(slot) {
       const ok = this.load(slot);
       if (ok) return;
       DDS.state = DDS.makeFreshState();
       DDS.state.currentSlot = slot;
     },
+
     switchToSlot(slot) {
       const target = Number(slot);
       if (target === DDS.state.currentSlot) return;
+
       this.manualSave();
       this.loadOrFresh(target);
+      DDS.ui.resetDisplays();
       DDS.ui.notify(`Switched to slot ${target}.`);
       DDS.ui.buildStaticCards();
       DDS.ui.renderAll();
     },
+
     slotMeta(slot) {
       const raw = localStorage.getItem(this.key(slot));
       if (!raw) {
@@ -76,5 +85,3 @@
     }
   };
 })();
-
-

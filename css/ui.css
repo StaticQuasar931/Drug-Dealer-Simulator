@@ -1,18 +1,24 @@
 ﻿.card {
   border: 1px solid rgba(255,255,255,0.11);
   border-radius: 10px;
-  background: linear-gradient(165deg, rgba(13,20,33,0.95), rgba(11,17,28,0.95));
+  background: linear-gradient(165deg, rgba(14,22,35,0.95), rgba(11,18,30,0.95));
   padding: 8px;
 }
 .card .title {
+  font-size: 0.86rem;
   font-weight: 600;
-  color: #e5eeff;
-  letter-spacing: 0.2px;
+  color: #e8f1ff;
 }
 .card .desc {
-  color: #9bb0d3;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
+  color: #99afcf;
   margin-top: 3px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 .name-wrap {
   display: inline-flex;
@@ -45,23 +51,23 @@
   gap: 6px;
   padding: 2px 8px;
   border-radius: 999px;
+  font-size: 0.72rem;
+  color: #d2e4ff;
   background: rgba(255,255,255,0.08);
-  font-size: 0.76rem;
 }
 .progress {
-  height: 8px;
   margin-top: 6px;
+  height: 8px;
   border-radius: 999px;
   background: rgba(255,255,255,0.12);
   overflow: hidden;
 }
 .progress > div {
-  height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #2de2b6, #25b0ff);
-  transition: width 180ms linear;
+  height: 100%;
+  background: linear-gradient(90deg, #2dd4a4, #4f9fff);
 }
-.heat0 { color: #7df1ab; }
-.heat1 { color: #d7ef78; }
-.heat2 { color: #ffd579; }
-.heat3 { color: #ff8e9a; }
+.heat0 { color: #7df1ae; }
+.heat1 { color: #d8ec7c; }
+.heat2 { color: #ffd684; }
+.heat3 { color: #ff8c9a; }

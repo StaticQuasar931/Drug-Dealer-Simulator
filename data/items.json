@@ -1,12 +1,12 @@
-﻿[
-  {"id":"baggie_weed","name":"Weed Baggies","tier":1,"baseTime":8,"baseValue":11,"baseHeat":0.35,"quality":1,"emoji":"🌿","icon":"assets/icons/product-weed-baggie.svg","unlockCost":0},
-  {"id":"pre_roll_joints","name":"Pre-Rolled Joints","tier":2,"baseTime":13,"baseValue":22,"baseHeat":0.5,"quality":1,"emoji":"🚬","icon":"assets/icons/product-joint.svg","unlockCost":800},
-  {"id":"thc_edibles","name":"THC Edibles","tier":3,"baseTime":18,"baseValue":34,"baseHeat":0.65,"quality":1,"emoji":"🍬","icon":"assets/icons/product-edibles.svg","unlockCost":2800},
-  {"id":"thc_vape_carts","name":"THC Vape Carts","tier":4,"baseTime":23,"baseValue":50,"baseHeat":0.82,"quality":1,"emoji":"💨","icon":"assets/icons/product-thc-vape.svg","unlockCost":6500},
-  {"id":"nicotine_pods","name":"Nicotine Pods","tier":5,"baseTime":28,"baseValue":65,"baseHeat":0.9,"quality":1,"emoji":"🫧","icon":"assets/icons/product-nicotine.svg","unlockCost":12000},
-  {"id":"mdma_ecstasy","name":"MDMA / Ecstasy","tier":6,"baseTime":37,"baseValue":135,"baseHeat":1.8,"quality":1,"emoji":"💊","icon":"assets/icons/product-mdma.svg","unlockCost":26000},
-  {"id":"lsd_tabs","name":"LSD Tabs","tier":7,"baseTime":46,"baseValue":230,"baseHeat":2.4,"quality":1,"emoji":"🌈","icon":"assets/icons/product-lsd.svg","unlockCost":43000},
-  {"id":"cocaine","name":"Cocaine","tier":8,"baseTime":58,"baseValue":420,"baseHeat":3.8,"quality":1,"emoji":"⚪","icon":"assets/icons/product-cocaine.svg","unlockCost":88000},
-  {"id":"methamphetamine","name":"Methamphetamine","tier":9,"baseTime":72,"baseValue":760,"baseHeat":5.5,"quality":1,"emoji":"🧊","icon":"assets/icons/product-methamphetamine.svg","unlockCost":170000},
-  {"id":"heroin","name":"Heroin","tier":10,"baseTime":86,"baseValue":1300,"baseHeat":7.1,"quality":1,"emoji":"🩹","icon":"assets/icons/product-heroin.svg","unlockCost":300000}
+[
+  {"id":"baggie_weed","name":"Weed Baggies","tier":1,"baseTime":8,"baseValue":12,"baseHeat":0.35,"quality":1,"emoji":"\uD83C\uDF3F","icon":"assets/icons/product-weed-baggie.svg","unlockCost":500},
+  {"id":"pre_roll_joints","name":"Pre-Rolled Joints","tier":2,"baseTime":13,"baseValue":24,"baseHeat":0.5,"quality":1,"emoji":"\uD83D\uDEAC","icon":"assets/icons/product-joint.svg","unlockCost":1600},
+  {"id":"thc_edibles","name":"THC Edibles","tier":3,"baseTime":18,"baseValue":36,"baseHeat":0.65,"quality":1,"emoji":"\uD83C\uDF6C","icon":"assets/icons/product-edibles.svg","unlockCost":4200},
+  {"id":"thc_vape_carts","name":"THC Vape Carts","tier":4,"baseTime":23,"baseValue":53,"baseHeat":0.82,"quality":1,"emoji":"\uD83D\uDCA8","icon":"assets/icons/product-thc-vape.svg","unlockCost":9800},
+  {"id":"nicotine_pods","name":"Nicotine Pods","tier":5,"baseTime":28,"baseValue":69,"baseHeat":0.95,"quality":1,"emoji":"\uD83D\uDEAD","icon":"assets/icons/product-nicotine.svg","unlockCost":18000},
+  {"id":"mdma_ecstasy","name":"MDMA / Ecstasy","tier":6,"baseTime":37,"baseValue":138,"baseHeat":1.8,"quality":1,"emoji":"\uD83D\uDC8A","icon":"assets/icons/product-mdma.svg","unlockCost":38000},
+  {"id":"lsd_tabs","name":"LSD Tabs","tier":7,"baseTime":46,"baseValue":235,"baseHeat":2.4,"quality":1,"emoji":"\uD83C\uDF08","icon":"assets/icons/product-lsd.svg","unlockCost":62000},
+  {"id":"cocaine","name":"Cocaine","tier":8,"baseTime":58,"baseValue":425,"baseHeat":3.8,"quality":1,"emoji":"\u26AA","icon":"assets/icons/product-cocaine.svg","unlockCost":120000},
+  {"id":"methamphetamine","name":"Methamphetamine","tier":9,"baseTime":72,"baseValue":765,"baseHeat":5.5,"quality":1,"emoji":"\uD83E\uDDCA","icon":"assets/icons/product-methamphetamine.svg","unlockCost":220000},
+  {"id":"heroin","name":"Heroin","tier":10,"baseTime":86,"baseValue":1320,"baseHeat":7.1,"quality":1,"emoji":"\uD83E\uDE79","icon":"assets/icons/product-heroin.svg","unlockCost":360000}
 ]
