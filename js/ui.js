@@ -6,15 +6,20 @@
     nodes: {
       production: {}, workers: {}, districts: {}, fronts: {}, upgrades: {}, achievements: {}
     },
+
     bind() {
       el('saveBtn').addEventListener('click', () => DDS.save.manualSave());
       el('loadBtn').addEventListener('click', () => {
-        DDS.save.load(DDS.state.currentSlot);
+        DDS.save.loadOrFresh(DDS.state.currentSlot);
+        this.buildStaticCards();
         this.notify(`Loaded slot ${DDS.state.currentSlot}.`);
+        this.renderAll();
       });
-      el('slotBtn').addEventListener('click', () => DDS.save.switchSlot());
+      el('slotSelect').addEventListener('change', (e) => DDS.save.switchToSlot(e.target.value));
       el('settingsBtn').addEventListener('click', () => el('settingsModal').classList.add('active'));
       el('settingsClose').addEventListener('click', () => el('settingsModal').classList.remove('active'));
+
+      el('runDealBtn').addEventListener('click', () => DDS.game.runStreetDeal());
       el('sellAllBtn').addEventListener('click', () => DDS.production.sellAll());
       el('launderBtn').addEventListener('click', () => DDS.laundering.manualLaunder());
       el('layLowBtn').addEventListener('click', () => {
@@ -64,27 +69,44 @@
         }
       });
     },
+
     money(v) { return `$${Math.floor(v).toLocaleString('en-US')}`; },
+
     log(msg) {
       const d = document.createElement('div');
       d.textContent = `${new Date().toLocaleTimeString()} - ${msg}`;
       const panel = el('logPanel');
       panel.prepend(d);
-      while (panel.children.length > 80) panel.removeChild(panel.lastChild);
+      while (panel.children.length > 120) panel.removeChild(panel.lastChild);
     },
+
     notify(msg, type) {
       const n = document.createElement('div');
       n.className = 'note';
-      if (type === 'warn') n.style.background = 'rgba(145,35,53,0.3)';
+      if (type === 'warn') n.style.background = 'rgba(145,35,53,0.34)';
       n.textContent = msg;
       el('notificationStack').prepend(n);
       setTimeout(() => n.remove(), 3800);
     },
+
     deviceLabel() {
       const w = window.innerWidth;
       if (w <= 620) return 'Mobile';
       if (w <= 1100) return 'Tablet';
       return 'Desktop';
+    },
+
+    updateSlotOptions() {
+      const select = el('slotSelect');
+      [1, 2, 3].forEach((slot) => {
+        const meta = DDS.save.slotMeta(slot);
+        const op = select.querySelector(`option[value="${slot}"]`);
+        if (!op) return;
+        op.textContent = meta.empty
+          ? `Slot ${slot} (Empty)`
+          : `Slot ${slot} (${this.money(meta.lifetimeSales)} sales)`;
+      });
+      select.value = String(DDS.state.currentSlot);
     },
 
     buildStaticCards() {
@@ -94,6 +116,7 @@
       this.buildFrontCards();
       this.buildUpgradeCards();
       this.buildAchievementCards();
+      this.updateSlotOptions();
     },
 
     buildProductionCards() {
@@ -128,7 +151,7 @@
         const btn = document.createElement('button');
         c.append(row, stats, market, progWrap, btn);
         wrap.appendChild(c);
-        this.nodes.production[item.id] = { c, icon, name, stock, stats, market, prog, btn, unlock: null };
+        this.nodes.production[item.id] = { c, name, stock, stats, market, prog, btn, unlock: null };
       });
     },
 
@@ -139,9 +162,12 @@
       DDS.data.workers.forEach((w) => {
         const c = document.createElement('div'); c.className = 'card';
         const row = document.createElement('div'); row.className = 'row';
+        const left = document.createElement('div'); left.className = 'worker-row';
+        const face = document.createElement('img'); face.className = 'worker-face'; face.src = w.portrait; face.alt = `${w.name} portrait`;
         const title = document.createElement('div'); title.className = 'title'; title.textContent = w.name;
+        left.append(face, title);
         const chip = document.createElement('span'); chip.className = 'stat-chip';
-        row.append(title, chip);
+        row.append(left, chip);
         const desc = document.createElement('div'); desc.className = 'desc'; desc.textContent = w.desc;
         const lock = document.createElement('div'); lock.className = 'desc';
         const btn = document.createElement('button');
@@ -216,6 +242,33 @@
       });
     },
 
+    updateSystemVisibility() {
+      const st = DDS.state;
+      const systemReq = DDS.progression.systems;
+
+      el('productionList').style.display = st.systems.production ? 'grid' : 'none';
+      el('workersList').style.display = st.systems.workers ? 'grid' : 'none';
+      el('districtList').style.display = st.systems.districts ? 'grid' : 'none';
+      el('frontList').style.display = st.systems.fronts ? 'grid' : 'none';
+      el('upgradesList').style.display = st.systems.upgrades ? 'grid' : 'none';
+
+      el('productionHint').textContent = st.systems.production
+        ? 'Production unlocked. Start with weed lines and scale upward.'
+        : `Locked. Reach ${this.money(systemReq.production)} lifetime sales to open production.`;
+      el('workersHint').textContent = st.systems.workers
+        ? 'Workers unlocked. Build your crew.'
+        : `Locked. Reach ${this.money(systemReq.workers)} lifetime sales to recruit workers.`;
+      el('districtHint').textContent = st.systems.districts
+        ? 'District map unlocked. Expand territory.'
+        : `Locked. Reach ${this.money(systemReq.districts)} lifetime sales to expand territory.`;
+      el('frontHint').textContent = st.systems.fronts
+        ? 'Fronts unlocked. Passive laundering is active when owned.'
+        : `Locked. Reach ${this.money(systemReq.fronts)} lifetime sales to open fronts.`;
+      el('upgradeHint').textContent = st.systems.upgrades
+        ? 'Upgrades unlocked. Improve efficiency.'
+        : `Locked. Reach ${this.money(systemReq.upgrades)} lifetime sales to access upgrades.`;
+    },
+
     renderAll() {
       const st = DDS.state;
       el('dirtyMoney').textContent = this.money(st.dirtyMoney);
@@ -226,10 +279,23 @@
       el('heatStage').textContent = DDS.game.heatStage();
       el('heatStage').className = DDS.game.heatClass();
       el('eventBanner').textContent = st.activeEvent ? `${st.activeEvent.name}: ${st.activeEvent.desc}` : 'No active event.';
-      el('slotLabel').textContent = String(st.currentSlot);
       el('deviceType').textContent = this.deviceLabel();
       el('lifetimeSales').textContent = this.money(st.lifetimeSales);
       el('lifetimeLaundered').textContent = this.money(st.lifetimeLaundered);
+      el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank}`;
+
+      const cooldownMs = Math.max(0, st.dealer.cooldownUntil - Date.now());
+      el('dealerCooldown').textContent = cooldownMs > 0
+        ? `Deal Cooldown: ${(cooldownMs / 1000).toFixed(1)}s`
+        : 'Deal Cooldown: Ready';
+
+      const progressMax = 340000;
+      const pct = Math.min(100, (st.lifetimeSales / progressMax) * 100);
+      el('slotProgressBar').style.width = `${pct}%`;
+      el('slotProgressText').textContent = `Slot ${st.currentSlot} progression: ${pct.toFixed(1)}%`;
+
+      this.updateSystemVisibility();
+      this.updateSlotOptions();
 
       this.renderProduction();
       this.renderWorkers();
@@ -245,7 +311,7 @@
         const unlocked = DDS.state.unlockedItems[item.id];
         node.name.textContent = `${item.emoji} ${item.name}`;
         node.stock.textContent = `${DDS.state.inventory[item.id] || 0} in stock`;
-        node.stats.textContent = `Time ${item.baseTime}s | Base ${this.money(item.baseValue)} | Heat ${item.baseHeat.toFixed(1)}`;
+        node.stats.textContent = `Time ${item.baseTime}s | Base ${this.money(item.baseValue)} | Heat ${item.baseHeat.toFixed(2)}`;
         node.market.textContent = `Market ${this.money(DDS.economy.unitPrice(item))}`;
         node.prog.style.width = `${Math.min(100, (DDS.state.prodProgress[item.id] || 0) * 100)}%`;
 
@@ -263,6 +329,7 @@
         } else if (!unlocked) {
           node.btn.textContent = `Unlock ${this.money(item.unlockCost)}`;
         }
+        node.btn.disabled = !DDS.state.systems.production;
       });
     },
 
@@ -286,7 +353,7 @@
         const n = this.nodes.districts[d.id];
         const has = DDS.state.unlockedDistricts.includes(d.id);
         n.btn.textContent = has ? 'Owned' : `Unlock ${this.money(d.unlockCost)}`;
-        n.btn.disabled = has;
+        n.btn.disabled = has || !DDS.state.systems.districts;
         n.btn.onclick = () => DDS.map.unlock(d.id);
       });
     },
@@ -310,7 +377,7 @@
         const level = DDS.state.upgrades[u.id] || 0;
         const cost = Math.floor(u.baseCost * Math.pow(u.costGrowth, level));
         const req = DDS.progression.upgrades[u.id] || 0;
-        const unlocked = DDS.state.lifetimeSales >= req;
+        const unlocked = DDS.state.systems.upgrades && DDS.state.lifetimeSales >= req;
         n.level.textContent = `Lv ${level}/${u.maxLevel}`;
         n.lock.textContent = unlocked ? 'Unlocked' : `Unlock at ${this.money(req)} lifetime sales`;
         n.btn.textContent = level >= u.maxLevel ? 'Maxed' : `Upgrade ${this.money(cost)}`;

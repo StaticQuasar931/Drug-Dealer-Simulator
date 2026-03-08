@@ -1,8 +1,10 @@
 ﻿[
-  {"id":"cannabis","name":"Cannabis","tier":1,"baseTime":9,"baseValue":14,"baseHeat":0.7,"quality":1,"emoji":"🌿","icon":"assets/icons/product-cannabis.svg","unlockCost":0},
-  {"id":"cocaine","name":"Cocaine","tier":2,"baseTime":18,"baseValue":58,"baseHeat":1.8,"quality":1,"emoji":"⚪","icon":"assets/icons/product-cocaine.svg","unlockCost":2200},
-  {"id":"methamphetamine","name":"Methamphetamine","tier":3,"baseTime":29,"baseValue":170,"baseHeat":3.1,"quality":1,"emoji":"🧊","icon":"assets/icons/product-methamphetamine.svg","unlockCost":9800},
-  {"id":"heroin","name":"Heroin","tier":4,"baseTime":42,"baseValue":430,"baseHeat":4.7,"quality":1,"emoji":"🩹","icon":"assets/icons/product-heroin.svg","unlockCost":32000},
-  {"id":"lsd","name":"LSD","tier":5,"baseTime":54,"baseValue":920,"baseHeat":6.0,"quality":1,"emoji":"🌈","icon":"assets/icons/product-lsd.svg","unlockCost":86000},
-  {"id":"mdma","name":"MDMA","tier":6,"baseTime":70,"baseValue":1750,"baseHeat":7.6,"quality":1,"emoji":"💊","icon":"assets/icons/product-mdma.svg","unlockCost":180000}
+  {"id":"mids_cannabis","name":"Cannabis (Mids)","tier":1,"baseTime":10,"baseValue":12,"baseHeat":0.45,"quality":1,"emoji":"🌿","icon":"assets/icons/product-cannabis.svg","unlockCost":0},
+  {"id":"kush_cannabis","name":"Cannabis (Kush)","tier":2,"baseTime":16,"baseValue":28,"baseHeat":0.7,"quality":1,"emoji":"🍃","icon":"assets/icons/product-kush.svg","unlockCost":1200},
+  {"id":"haze_cannabis","name":"Cannabis (Haze)","tier":3,"baseTime":22,"baseValue":44,"baseHeat":0.95,"quality":1,"emoji":"🌱","icon":"assets/icons/product-haze.svg","unlockCost":4200},
+  {"id":"cocaine","name":"Cocaine","tier":4,"baseTime":35,"baseValue":135,"baseHeat":2.1,"quality":1,"emoji":"⚪","icon":"assets/icons/product-cocaine.svg","unlockCost":18000},
+  {"id":"methamphetamine","name":"Methamphetamine","tier":5,"baseTime":48,"baseValue":330,"baseHeat":3.6,"quality":1,"emoji":"🧊","icon":"assets/icons/product-methamphetamine.svg","unlockCost":52000},
+  {"id":"heroin","name":"Heroin","tier":6,"baseTime":60,"baseValue":760,"baseHeat":5.2,"quality":1,"emoji":"🩹","icon":"assets/icons/product-heroin.svg","unlockCost":120000},
+  {"id":"lsd","name":"LSD","tier":7,"baseTime":74,"baseValue":1500,"baseHeat":6.8,"quality":1,"emoji":"🌈","icon":"assets/icons/product-lsd.svg","unlockCost":240000},
+  {"id":"mdma","name":"MDMA","tier":8,"baseTime":88,"baseValue":2500,"baseHeat":8.3,"quality":1,"emoji":"💊","icon":"assets/icons/product-mdma.svg","unlockCost":420000}
 ]

@@ -1,8 +1,8 @@
 ﻿[
-  {"id":"dealers","name":"Dealers","baseCost":120,"costGrowth":1.21,"baseOutput":1,"desc":"Automates low-tier production."},
-  {"id":"chemists","name":"Chemists","baseCost":520,"costGrowth":1.25,"baseOutput":1,"desc":"Increases production speed."},
-  {"id":"smugglers","name":"Smugglers","baseCost":1200,"costGrowth":1.29,"baseOutput":1,"desc":"Improves district route multiplier."},
-  {"id":"accountants","name":"Accountants","baseCost":1700,"costGrowth":1.32,"baseOutput":1,"desc":"Improves laundering efficiency."},
-  {"id":"security","name":"Security","baseCost":1500,"costGrowth":1.3,"baseOutput":1,"desc":"Reduces heat and raid impact."},
-  {"id":"hackers","name":"Hackers","baseCost":3400,"costGrowth":1.35,"baseOutput":1,"desc":"Improves market volatility handling."}
+  {"id":"dealers","name":"Dealers","baseCost":220,"costGrowth":1.2,"baseOutput":1,"desc":"Automates low-tier street flow.","portrait":"assets/characters/worker-dealer.png"},
+  {"id":"chemists","name":"Chemists","baseCost":900,"costGrowth":1.24,"baseOutput":1,"desc":"Increases production speed.","portrait":"assets/characters/worker-chemist.png"},
+  {"id":"smugglers","name":"Smugglers","baseCost":1800,"costGrowth":1.28,"baseOutput":1,"desc":"Boosts district route multipliers.","portrait":"assets/characters/worker-smuggler.png"},
+  {"id":"accountants","name":"Accountants","baseCost":2500,"costGrowth":1.31,"baseOutput":1,"desc":"Improves laundering efficiency.","portrait":"assets/characters/worker-accountant.png"},
+  {"id":"security","name":"Security","baseCost":2200,"costGrowth":1.29,"baseOutput":1,"desc":"Reduces heat and raid impact.","portrait":"assets/characters/worker-security.png"},
+  {"id":"hackers","name":"Hackers","baseCost":5000,"costGrowth":1.34,"baseOutput":1,"desc":"Stabilizes demand and event risk.","portrait":"assets/characters/worker-hacker.png"}
 ]

@@ -22,19 +22,56 @@
       if (!raw) return false;
       const loaded = JSON.parse(raw);
       const safeOffline = DDS.antiCheat.computeSafeOfflineSeconds(Date.now(), loaded.lastSaveTime, loaded.lastTrustedTime);
-      DDS.state = Object.assign(DDS.makeFreshState(), loaded);
-      DDS.state.currentSlot = slot;
+
+      const base = DDS.makeFreshState();
+      const merged = Object.assign({}, base, loaded);
+      merged.inventory = Object.assign({}, base.inventory, loaded.inventory || {});
+      merged.unlockedItems = Object.assign({}, base.unlockedItems, loaded.unlockedItems || {});
+      merged.prodProgress = Object.assign({}, base.prodProgress, loaded.prodProgress || {});
+      merged.workers = Object.assign({}, base.workers, loaded.workers || {});
+      merged.upgrades = Object.assign({}, base.upgrades, loaded.upgrades || {});
+      merged.frontsOwned = Object.assign({}, base.frontsOwned, loaded.frontsOwned || {});
+      merged.achievementBonuses = Object.assign({}, base.achievementBonuses, loaded.achievementBonuses || {});
+      merged.systems = Object.assign({}, base.systems, loaded.systems || {});
+      merged.dealer = Object.assign({}, base.dealer, loaded.dealer || {});
+      merged.currentSlot = slot;
+
+      DDS.state = merged;
       DDS.game.simulateOffline(safeOffline);
       return true;
     },
-    switchSlot() {
-      const next = DDS.state.currentSlot === 3 ? 1 : DDS.state.currentSlot + 1;
+    loadOrFresh(slot) {
+      const ok = this.load(slot);
+      if (ok) return;
+      DDS.state = DDS.makeFreshState();
+      DDS.state.currentSlot = slot;
+    },
+    switchToSlot(slot) {
+      const target = Number(slot);
+      if (target === DDS.state.currentSlot) return;
       this.manualSave();
-      if (!this.load(next)) {
-        DDS.state = DDS.makeFreshState();
-        DDS.state.currentSlot = next;
+      this.loadOrFresh(target);
+      DDS.ui.notify(`Switched to slot ${target}.`);
+      DDS.ui.buildStaticCards();
+      DDS.ui.renderAll();
+    },
+    slotMeta(slot) {
+      const raw = localStorage.getItem(this.key(slot));
+      if (!raw) {
+        return {
+          slot,
+          empty: true,
+          lifetimeSales: 0,
+          lastSaveTime: null
+        };
       }
-      DDS.ui.notify(`Switched to slot ${next}.`);
+      const data = JSON.parse(raw);
+      return {
+        slot,
+        empty: false,
+        lifetimeSales: data.lifetimeSales || 0,
+        lastSaveTime: data.lastSaveTime || null
+      };
     }
   };
 })();

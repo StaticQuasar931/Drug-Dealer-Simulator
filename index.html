@@ -33,48 +33,83 @@
   <header class="topbar">
     <div class="title-wrap">
       <img src="assets/banner.png" alt="Drug Dealer Simulator banner" class="banner">
+      <img src="assets/characters/dealer.png" alt="Dealer portrait" class="lead-portrait">
       <div>
         <h1>Drug Dealer Simulator</h1>
         <p>Version 2.0.0</p>
       </div>
     </div>
+
     <div class="resources">
       <div><span>Dirty</span><strong id="dirtyMoney">$0</strong></div>
       <div><span>Clean</span><strong id="cleanMoney">$0</strong></div>
       <div><span>Demand</span><strong id="demand">1.00x</strong></div>
       <div><span>Heat</span><strong id="heatPercent">0%</strong></div>
     </div>
+
     <div class="btns">
+      <label class="slot-wrap" for="slotSelect">Save Slot
+        <select id="slotSelect">
+          <option value="1">Slot 1</option>
+          <option value="2">Slot 2</option>
+          <option value="3">Slot 3</option>
+        </select>
+      </label>
       <button id="settingsBtn">Settings</button>
       <button id="saveBtn">Save</button>
       <button id="loadBtn">Load</button>
-      <button id="slotBtn">Slot <span id="slotLabel">1</span></button>
     </div>
   </header>
 
   <main class="board">
+    <section class="panel panel-wide">
+      <h2>Street Level</h2>
+      <p class="panel-note" id="dealerHint">You are a small-time dealer. Build your first customer loop.</p>
+      <div class="quick-actions">
+        <button id="runDealBtn" class="primary">Run Street Deal</button>
+        <button id="layLowBtn" class="ghost">Lay Low (20s)</button>
+        <button id="sellAllBtn" class="ghost">Sell Inventory</button>
+        <button id="launderBtn" class="ghost">Manual Wash</button>
+      </div>
+      <div class="dealer-meta">
+        <p id="dealerCooldown">Deal Cooldown: Ready</p>
+        <p id="dealerRank">Dealer Rank: 1</p>
+      </div>
+      <div class="slot-progress-wrap">
+        <div class="slot-progress-label" id="slotProgressText">Slot 1 progression: 0%</div>
+        <div class="slot-progress"><div id="slotProgressBar"></div></div>
+      </div>
+      <div id="notificationStack"></div>
+      <div id="logPanel" class="log"></div>
+    </section>
+
     <section class="panel">
       <h2>Production</h2>
+      <p id="productionHint" class="panel-note">Locked. Reach $1,500 lifetime sales to open production.</p>
       <div id="productionList" class="cards"></div>
     </section>
 
     <section class="panel">
       <h2>Workers</h2>
+      <p id="workersHint" class="panel-note">Locked. Reach $3,000 lifetime sales to recruit workers.</p>
       <div id="workersList" class="cards"></div>
     </section>
 
     <section class="panel">
       <h2>Districts</h2>
+      <p id="districtHint" class="panel-note">Locked. Reach $6,000 lifetime sales to expand territory.</p>
       <div id="districtList" class="cards"></div>
     </section>
 
     <section class="panel">
       <h2>Laundering Fronts</h2>
+      <p id="frontHint" class="panel-note">Locked. Reach $9,000 lifetime sales to open fronts.</p>
       <div id="frontList" class="cards"></div>
     </section>
 
     <section class="panel">
       <h2>Upgrades</h2>
+      <p id="upgradeHint" class="panel-note">Locked. Reach $12,000 lifetime sales to access upgrades.</p>
       <div id="upgradesList" class="cards"></div>
     </section>
 
@@ -83,13 +118,6 @@
       <div class="meter"><div id="heatBar"></div></div>
       <p id="heatStage">Suspicion</p>
       <div id="eventBanner" class="event">No active event.</div>
-      <div class="quick-actions">
-        <button id="sellAllBtn" class="primary">Sell Inventory</button>
-        <button id="launderBtn" class="primary">Launder Dirty Money</button>
-        <button id="layLowBtn" class="ghost">Lay Low (20s)</button>
-      </div>
-      <div id="notificationStack"></div>
-      <div id="logPanel" class="log"></div>
     </section>
 
     <section class="panel">

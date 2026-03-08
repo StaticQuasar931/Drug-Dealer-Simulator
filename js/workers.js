@@ -5,6 +5,7 @@
       return DDS.progression.workers[workerId] || 0;
     },
     isUnlocked(workerId) {
+      if (!DDS.state.systems.workers) return false;
       return DDS.state.lifetimeSales >= this.unlockRequirement(workerId);
     },
     cost(workerId) {

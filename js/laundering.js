@@ -2,32 +2,33 @@
 (function () {
   DDS.laundering = {
     fronts: [
-      { id: 'car_wash', name: 'Car Wash', cost: 1800, rate: 90, efficiency: 0.78, heatDrop: 1.5, desc: 'Cheapest front. Slow and inefficient.' },
-      { id: 'arcade', name: 'Arcade', cost: 5200, rate: 160, efficiency: 0.83, heatDrop: 1.3, desc: 'Balanced throughput and stability.' },
-      { id: 'laundromat', name: 'Laundromat', cost: 12000, rate: 300, efficiency: 0.88, heatDrop: 1.7, desc: 'Solid volume with low profile.' },
-      { id: 'food_truck', name: 'Food Truck', cost: 26000, rate: 430, efficiency: 0.86, heatDrop: 2.1, desc: 'Good for heat management.' },
-      { id: 'car_dealer', name: 'Car Dealership', cost: 65000, rate: 780, efficiency: 0.93, heatDrop: 1.1, desc: 'Highest efficiency and scale.' }
+      { id: 'car_wash', name: 'Car Wash', cost: 2400, rate: 90, efficiency: 0.76, heatDrop: 1.5, desc: 'Cheapest front. Slow and inefficient.' },
+      { id: 'arcade', name: 'Arcade', cost: 6600, rate: 170, efficiency: 0.82, heatDrop: 1.3, desc: 'Balanced throughput and profile.' },
+      { id: 'laundromat', name: 'Laundromat', cost: 15000, rate: 300, efficiency: 0.87, heatDrop: 1.7, desc: 'Strong volume and low profile.' },
+      { id: 'food_truck', name: 'Food Truck', cost: 32000, rate: 450, efficiency: 0.86, heatDrop: 2.1, desc: 'Strong heat management.' },
+      { id: 'car_dealer', name: 'Car Dealership', cost: 76000, rate: 800, efficiency: 0.93, heatDrop: 1.1, desc: 'Best efficiency and scale.' }
     ],
     unlockRequirement(frontId) {
       return DDS.progression.fronts[frontId] || 0;
     },
     isUnlocked(frontId) {
+      if (!DDS.state.systems.fronts) return false;
       return DDS.state.lifetimeSales >= this.unlockRequirement(frontId);
     },
     manualLaunder() {
       const st = DDS.state;
       if (st.dirtyMoney <= 0) {
-        DDS.ui.notify('No dirty money to launder.', 'warn');
+        DDS.ui.notify('No dirty money to wash.', 'warn');
         return;
       }
-      const cap = 500 + (st.workers.accountants || 0) * 40;
+      const cap = 420 + (st.workers.accountants || 0) * 35;
       const amount = Math.min(st.dirtyMoney, cap);
-      const efficiency = 0.36 + (st.workers.accountants || 0) * 0.005;
-      const cleaned = amount * Math.min(0.62, efficiency);
+      const efficiency = 0.33 + (st.workers.accountants || 0) * 0.004;
+      const cleaned = amount * Math.min(0.6, efficiency);
       st.dirtyMoney -= amount;
       st.cleanMoney += cleaned;
       st.lifetimeLaundered += cleaned;
-      st.heat = Math.max(0, st.heat - 1.2);
+      st.heat = Math.max(0, st.heat - 1.1);
       DDS.ui.notify(`Washed ${DDS.ui.money(cleaned)} clean money.`);
     },
     buy(frontId) {
@@ -48,6 +49,7 @@
     },
     tick(deltaSec) {
       const st = DDS.state;
+      if (!st.systems.fronts) return;
       let totalRate = 0;
       let avgEff = 0;
       let avgHeatDrop = 0;

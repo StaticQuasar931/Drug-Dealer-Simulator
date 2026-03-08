@@ -3,6 +3,10 @@
   DDS.map = {
     unlock(districtId) {
       const st = DDS.state;
+      if (!st.systems.districts) {
+        DDS.ui.notify('District expansion not unlocked yet.', 'warn');
+        return;
+      }
       const d = DDS.data.districts.find((x) => x.id === districtId);
       if (!d || st.unlockedDistricts.includes(districtId)) return;
       if (st.cleanMoney < d.unlockCost) {
@@ -20,7 +24,7 @@
         const d = DDS.data.districts.find((x) => x.id === id);
         if (d) best = Math.max(best, d.saleBonus);
       });
-      return best * (1 + (st.workers.smugglers || 0) * 0.012);
+      return best * (1 + (st.workers.smugglers || 0) * 0.011);
     },
     heatMultiplier() {
       const st = DDS.state;

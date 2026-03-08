@@ -4,8 +4,8 @@
 }
 @keyframes pulseSoft {
   0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.08); }
+  50% { filter: brightness(1.06); }
 }
-.note { animation: fadeSlideIn 240ms ease; }
-.event { animation: pulseSoft 6s ease-in-out infinite; }
+.note { animation: fadeSlideIn calc(220ms * var(--anim-factor, 1)) ease; }
+.event { animation: pulseSoft calc(6s / var(--anim-factor, 1)) ease-in-out infinite; }
 body[data-quality="low"] .event { animation: none; }
