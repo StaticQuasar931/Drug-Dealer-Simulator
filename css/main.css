@@ -11,7 +11,7 @@
   --primary-deep: #1f987a;
   --accent: #f6bb66;
   --danger: #ff6f80;
-  --seed-trace: 473;
+  --seed-trace: 474;
 }
 
 * { box-sizing: border-box; }
@@ -27,12 +27,57 @@ body {
   min-height: 100vh;
 }
 
+body[data-theme='slate'] {
+  --bg-0: #0d121a;
+  --bg-1: #161d29;
+  --bg-2: #263042;
+  --panel: #1a2433;
+  --panel-hi: #28344a;
+  --ink: #edf4ff;
+  --muted: #afbed6;
+  --line: rgba(234, 242, 255, 0.14);
+  --primary: #63a2ff;
+  --primary-deep: #4f7ec9;
+  --accent: #b8c6ff;
+  --danger: #ff8da3;
+}
+
+body[data-theme='sunset'] {
+  --bg-0: #1a0c12;
+  --bg-1: #2a1521;
+  --bg-2: #49253a;
+  --panel: #3a1d2d;
+  --panel-hi: #5a2f46;
+  --ink: #fff0e4;
+  --muted: #e4b8ad;
+  --line: rgba(255, 232, 218, 0.16);
+  --primary: #ff935b;
+  --primary-deep: #e16e3d;
+  --accent: #ffc976;
+  --danger: #ff7d7d;
+}
+
+body[data-theme='terminal'] {
+  --bg-0: #040e07;
+  --bg-1: #0a1a11;
+  --bg-2: #13301f;
+  --panel: #0d2418;
+  --panel-hi: #163624;
+  --ink: #d7ffe5;
+  --muted: #8bcba0;
+  --line: rgba(183, 255, 210, 0.16);
+  --primary: #4ee079;
+  --primary-deep: #35af5a;
+  --accent: #95f5b0;
+  --danger: #ffa58f;
+}
+
 #bgAura {
   position: fixed;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 86% 14%, rgba(48, 210, 166, 0.12), transparent 34%),
+    radial-gradient(circle at 86% 14%, color-mix(in oklab, var(--primary) 40%, transparent), transparent 34%),
     radial-gradient(circle at 18% 86%, rgba(100, 170, 255, 0.1), transparent 42%);
   z-index: -1;
 }
@@ -42,11 +87,11 @@ body {
   top: 0;
   z-index: 6;
   display: grid;
-  grid-template-columns: 1.7fr 1.1fr 1fr;
+  grid-template-columns: 1.5fr 1.4fr 1fr;
   gap: 12px;
   padding: 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(7, 12, 20, 0.9);
+  background: color-mix(in oklab, var(--bg-0) 88%, black 12%);
   backdrop-filter: blur(8px);
 }
 
@@ -68,13 +113,13 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 2px solid rgba(48, 210, 166, 0.6);
+  border: 2px solid color-mix(in oklab, var(--primary) 65%, white 35%);
   object-fit: cover;
 }
 
 .title-wrap h1 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.16rem;
   letter-spacing: 0.3px;
 }
 
@@ -86,7 +131,7 @@ body {
 
 .resources {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -94,7 +139,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 8px;
-  background: linear-gradient(160deg, rgba(27, 46, 71, 0.96), rgba(15, 28, 45, 0.96));
+  background: linear-gradient(160deg, color-mix(in oklab, var(--panel-hi) 80%, black), color-mix(in oklab, var(--panel) 88%, black));
 }
 
 .res-card span {
@@ -106,8 +151,8 @@ body {
 .res-card strong {
   display: block;
   margin-top: 2px;
-  font-size: 0.98rem;
-  color: #f2f7ff;
+  font-size: 0.95rem;
+  color: var(--ink);
 }
 
 .btns {
@@ -126,11 +171,12 @@ body {
 
 .slot-wrap select,
 .settings-grid select,
-.deal-select-wrap select {
+.deal-select-wrap select,
+.reset-row select {
   min-width: 130px;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: #111b29;
+  background: color-mix(in oklab, var(--bg-1) 82%, black);
   color: var(--ink);
   padding: 6px;
 }
@@ -151,7 +197,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(165deg, rgba(21, 35, 54, 0.97), rgba(13, 24, 38, 0.97));
+  background: linear-gradient(165deg, color-mix(in oklab, var(--panel) 92%, black), color-mix(in oklab, var(--bg-1) 92%, black));
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
 }
 
@@ -196,7 +242,7 @@ body {
 
 .deal-grid {
   display: grid;
-  grid-template-columns: minmax(170px, 230px) 1fr;
+  grid-template-columns: minmax(180px, 240px) 1fr;
   gap: 8px;
   padding: 0 12px 8px;
 }
@@ -216,39 +262,26 @@ body {
   padding-right: 14px;
 }
 
-#runDealBtn .btn-main {
-  display: block;
-  position: relative;
-  z-index: 2;
-  font-weight: 600;
-}
-
-#runDealBtn .btn-sub {
-  display: block;
-  position: relative;
-  z-index: 2;
-  font-size: 0.74rem;
-  opacity: 0.92;
-  margin-top: 2px;
-}
-
+#runDealBtn .btn-main { display: block; position: relative; z-index: 2; font-weight: 600; }
+#runDealBtn .btn-sub { display: block; position: relative; z-index: 2; font-size: 0.74rem; opacity: 0.92; margin-top: 2px; }
 #runDealBtn .btn-progress {
   position: absolute;
   left: 0;
   bottom: 0;
   height: 3px;
   width: 0%;
-  background: rgba(255, 255, 255, 0.95);
+  background: color-mix(in oklab, var(--accent) 75%, white 25%);
+  transition: width 100ms linear;
 }
 
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   padding: 0 12px;
 }
 
-.compact-actions button { font-size: 0.82rem; }
+.compact-actions button { font-size: 0.8rem; }
 
 .dealer-meta {
   display: grid;
@@ -259,8 +292,22 @@ body {
   font-size: 0.82rem;
 }
 
+.street-bottom {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+  padding: 0 12px 12px;
+}
+
+.street-side {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 8px;
+}
+
 .market-wrap {
-  margin: 4px 12px 10px;
+  margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   overflow: hidden;
@@ -276,7 +323,7 @@ body {
 .market-columns,
 .market-row {
   display: grid;
-  grid-template-columns: 1.7fr 0.7fr 0.8fr 0.8fr 1fr;
+  grid-template-columns: 1.7fr 0.8fr 1.2fr 0.9fr 1fr;
   gap: 8px;
   align-items: center;
   padding: 7px 10px;
@@ -289,7 +336,7 @@ body {
 }
 
 .market-row {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -314,48 +361,33 @@ body {
 
 .hidden-row { display: none !important; }
 
-.slot-progress-wrap { padding: 0 12px 10px; }
-
-.slot-progress-label {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-
-.slot-progress {
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
+.slot-progress-wrap { padding: 0; }
+.slot-progress-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+.slot-progress { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
 #slotProgressBar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--primary), #59b4ff);
+  background: linear-gradient(90deg, var(--primary), color-mix(in oklab, var(--accent) 55%, white));
+  transition: width 180ms ease;
 }
 
 #notificationStack {
   display: grid;
   gap: 6px;
-  padding: 0 12px 8px;
 }
 
 .note {
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 8px;
-  background: rgba(30, 95, 75, 0.34);
+  background: color-mix(in oklab, var(--primary) 28%, transparent);
   padding: 8px;
   font-size: 0.8rem;
 }
 
-.warn-note {
-  background: rgba(145, 35, 53, 0.34);
-}
+.warn-note { background: color-mix(in oklab, var(--danger) 34%, transparent); }
 
 .log {
-  margin: 0 12px 12px;
-  height: 150px;
+  height: 220px;
   overflow: auto;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -384,6 +416,7 @@ body {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #76f2ad, #ffd569, #ff7987);
+  transition: width 120ms linear;
 }
 
 #heatStage,
@@ -394,12 +427,10 @@ body {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.03);
   padding: 8px;
-  color: #f6deff;
+  color: var(--ink);
 }
 
-.settings-modal {
-  width: min(920px, 95vw);
-}
+.settings-modal { width: min(960px, 95vw); }
 
 .settings-grid {
   display: grid;
@@ -418,20 +449,22 @@ body {
 
 .settings-subpanels {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.settings-subpanels section {
+.settings-subpanels details {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 8px;
   background: rgba(255, 255, 255, 0.03);
 }
 
-.settings-subpanels h4 {
-  margin: 0 0 8px;
+.settings-subpanels summary {
+  cursor: pointer;
   font-size: 0.86rem;
+  margin-bottom: 8px;
+  color: var(--ink);
 }
 
 .mini-grid {
@@ -441,9 +474,29 @@ body {
 }
 
 .snap-key { color: var(--muted); }
+.achievement-done { border-color: color-mix(in oklab, var(--primary) 55%, white); }
 
-.achievement-done {
-  border-color: rgba(48, 210, 166, 0.45);
+.shortcut-list {
+  margin: 0;
+  padding: 0 0 0 18px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  display: grid;
+  gap: 4px;
+}
+
+kbd {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 6px;
+  font-size: 0.72rem;
+  background: rgba(0, 0, 0, 0.24);
+  color: var(--ink);
+}
+
+.reset-row {
+  display: grid;
+  gap: 8px;
 }
 
 .actions {
@@ -465,7 +518,7 @@ body {
 .overlay.active { display: flex; }
 
 .modal {
-  background: #121a29;
+  background: color-mix(in oklab, var(--panel) 90%, black);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   padding: 16px;
@@ -479,20 +532,16 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #dce7ff;
+  color: var(--ink);
 }
 
-.small {
-  font-size: 0.83rem;
-  color: var(--muted);
-}
-
+.small { font-size: 0.83rem; color: var(--muted); }
 .hidden { display: none; }
 
 button {
   border: 1px solid rgba(255, 255, 255, 0.17);
   border-radius: 9px;
-  background: #1a2740;
+  background: color-mix(in oklab, var(--panel-hi) 76%, black);
   color: var(--ink);
   padding: 8px 10px;
   cursor: pointer;
@@ -501,25 +550,15 @@ button {
 
 button:hover {
   transform: translateY(-1px);
-  border-color: rgba(48, 210, 166, 0.55);
-  background: #223255;
+  border-color: color-mix(in oklab, var(--primary) 65%, white);
+  background: color-mix(in oklab, var(--panel-hi) 85%, white 8%);
 }
 
 button:active { transform: translateY(0); }
+button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.primary {
-  background: linear-gradient(120deg, #1ea37f, #2f8fd8);
-}
-
-.ghost {
-  background: rgba(255, 255, 255, 0.06);
-}
+.primary { background: linear-gradient(120deg, var(--primary-deep), color-mix(in oklab, var(--primary) 58%, #2f8fd8)); }
+.ghost { background: rgba(255, 255, 255, 0.06); }
 
 .foot {
   text-align: center;
@@ -528,9 +567,7 @@ button:disabled {
   padding: 12px;
 }
 
-[data-tip] {
-  position: relative;
-}
+[data-tip] { position: relative; }
 
 [data-tip]:hover::after,
 [data-tip]:focus-visible::after {
@@ -543,8 +580,8 @@ button:disabled {
   width: max-content;
   max-width: 240px;
   font-size: 0.72rem;
-  color: #eaf2ff;
-  background: #0f1827;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--bg-1) 80%, black);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 7px;
   padding: 4px 8px;

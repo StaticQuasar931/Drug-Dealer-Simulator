@@ -1,9 +1,9 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-scheme="oakline-473">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drug Dealer Simulator 2.0.0.3</title>
+  <title>Drug Dealer Simulator 2.0.0.4</title>
   <meta name="description" content="Fictional idle tycoon game with adaptive progression and smooth UI.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
-<body data-quality="balanced" data-layout-sign="v203r3">
+<body data-quality="balanced" data-theme="neon" data-layout-sign="v204r4">
   <div id="bgAura" aria-hidden="true"></div>
 
   <div id="contentWarning" class="overlay active" role="dialog" aria-modal="true">
@@ -36,7 +36,7 @@
       <img src="assets/characters/dealer.png" alt="Dealer portrait" class="lead-portrait">
       <div>
         <h1>Drug Dealer Simulator</h1>
-        <p>Version 2.0.0.3</p>
+        <p>Version 2.0.0.4</p>
       </div>
     </div>
 
@@ -45,6 +45,7 @@
       <div class="res-card"><span>Clean</span><strong id="cleanMoney">$0</strong></div>
       <div class="res-card"><span>Demand</span><strong id="demand">1.00x</strong></div>
       <div class="res-card"><span>Heat</span><strong id="heatPercent">0%</strong></div>
+      <div class="res-card"><span>Rank</span><strong id="rankSummary">R1 Street Rookie</strong></div>
     </div>
 
     <div class="btns">
@@ -55,7 +56,7 @@
           <option value="3">Slot 3</option>
         </select>
       </label>
-      <button id="settingsBtn">Settings</button>
+      <button id="settingsBtn" data-tip="Esc to open or close settings">Settings</button>
       <button id="saveBtn">Save</button>
       <button id="loadBtn">Load</button>
     </div>
@@ -66,7 +67,7 @@
       <div class="panel-head static-head">
         <h2>Street Operation</h2>
       </div>
-      <p class="panel-note" id="dealerHint">Start simple. Buy stock, run deals, wash cash, scale up.</p>
+      <p class="panel-note" id="dealerHint">Start simple. Buy stock, run deals, wash cash, and scale up.</p>
 
       <div class="deal-grid">
         <label class="deal-select-wrap">Deal Product
@@ -80,9 +81,9 @@
       </div>
 
       <div class="quick-actions compact-actions">
-        <button id="layLowBtn" class="ghost" data-tip="Temporarily reduce heat growth">Lay Low (20s)</button>
-        <button id="sellAllBtn" class="ghost" data-tip="Sell every stocked product instantly">Sell Inventory</button>
-        <button id="launderBtn" class="ghost" data-tip="Convert a small batch of dirty cash to clean cash">Manual Wash</button>
+        <button id="layLowBtn" class="ghost" data-tip="Pause product movement for 20 seconds and cool heat">Lay Low (20s)</button>
+        <button id="sellAllBtn" class="ghost" data-tip="Quick dump inventory with lower margin">Sell Inventory</button>
+        <button id="launderBtn" class="ghost" data-tip="Manual cleaner route with fixer cut and tax">Manual Wash</button>
       </div>
 
       <div class="dealer-meta">
@@ -90,25 +91,37 @@
         <p id="dealerRank">Dealer Rank: 1</p>
       </div>
 
-      <div class="market-wrap">
-        <div class="market-head">Street Market</div>
-        <div class="market-columns">
-          <span>Product</span>
-          <span>Cost</span>
-          <span>Bulk</span>
-          <span>Retail</span>
-          <span>Buy</span>
+      <div class="street-bottom">
+        <div class="market-wrap">
+          <div id="streetMarketHead" class="market-head">Street Market</div>
+          <div class="market-columns">
+            <span>Product</span>
+            <span>Cost</span>
+            <span>Bulk</span>
+            <span>Retail</span>
+            <span>Buy</span>
+          </div>
+          <div id="streetMarketList" class="market-list"></div>
         </div>
-        <div id="streetMarketList" class="market-list"></div>
-      </div>
 
-      <div class="slot-progress-wrap">
-        <div class="slot-progress-label" id="slotProgressText">Slot 1 progression: 0%</div>
-        <div class="slot-progress"><div id="slotProgressBar"></div></div>
+        <aside class="street-side">
+          <div class="slot-progress-wrap">
+            <div class="slot-progress-label" id="slotProgressText">Slot 1 progression: 0%</div>
+            <div class="slot-progress"><div id="slotProgressBar"></div></div>
+          </div>
+          <div id="notificationStack"></div>
+          <div id="logPanel" class="log"></div>
+        </aside>
       </div>
+    </section>
 
-      <div id="notificationStack"></div>
-      <div id="logPanel" class="log"></div>
+    <section class="panel" data-panel="upgrades" data-system="upgrades">
+      <div class="panel-head">
+        <h2>Upgrades</h2>
+        <button class="panel-toggle" data-toggle-panel="upgrades" aria-expanded="true">Hide</button>
+      </div>
+      <p id="upgradeHint" class="panel-note"></p>
+      <div id="upgradesList" class="cards"></div>
     </section>
 
     <section class="panel" data-panel="production" data-system="production">
@@ -147,15 +160,6 @@
       <div id="frontList" class="cards"></div>
     </section>
 
-    <section class="panel" data-panel="upgrades" data-system="upgrades">
-      <div class="panel-head">
-        <h2>Upgrades</h2>
-        <button class="panel-toggle" data-toggle-panel="upgrades" aria-expanded="true">Hide</button>
-      </div>
-      <p id="upgradeHint" class="panel-note"></p>
-      <div id="upgradesList" class="cards"></div>
-    </section>
-
     <section class="panel" data-panel="heat" data-system="events">
       <div class="panel-head">
         <h2>Heat and Market</h2>
@@ -172,6 +176,14 @@
       <h3>Settings and Run Details</h3>
 
       <div class="settings-grid">
+        <label>Theme
+          <select id="themeSelect">
+            <option value="neon">Neon Night</option>
+            <option value="slate">Slate Grid</option>
+            <option value="sunset">Sunset Vice</option>
+            <option value="terminal">Terminal Green</option>
+          </select>
+        </label>
         <label>Graphics Quality
           <select id="graphicsSelect">
             <option value="low">Low</option>
@@ -192,14 +204,38 @@
       </div>
 
       <div class="settings-subpanels">
-        <section>
-          <h4>Run Snapshot</h4>
+        <details open>
+          <summary>Run Snapshot</summary>
           <div id="settingsStatusList" class="mini-grid"></div>
-        </section>
-        <section>
-          <h4>Achievements</h4>
+        </details>
+        <details>
+          <summary>Achievements</summary>
           <div id="settingsAchievementsList" class="cards"></div>
-        </section>
+        </details>
+        <details>
+          <summary>Keyboard Shortcuts</summary>
+          <ul id="shortcutList" class="shortcut-list">
+            <li><kbd>Esc</kbd> Open or close settings</li>
+            <li><kbd>E</kbd> Close open menus</li>
+            <li><kbd>Space</kbd> Run street deal</li>
+            <li><kbd>S</kbd> Sell inventory</li>
+            <li><kbd>L</kbd> Lay low</li>
+            <li><kbd>1-9</kbd> Buy +1 from market rows</li>
+            <li><kbd>Shift</kbd> + <kbd>1-9</kbd> Buy +10 from market rows</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Reset Saves</summary>
+          <div class="reset-row">
+            <select id="resetSlotSelect">
+              <option value="1">Slot 1</option>
+              <option value="2">Slot 2</option>
+              <option value="3">Slot 3</option>
+            </select>
+            <button id="resetSlotBtn" class="ghost">Reset Selected Slot</button>
+            <button id="resetAllSlotsBtn" class="ghost">Reset All Slots</button>
+          </div>
+        </details>
       </div>
 
       <div class="actions">

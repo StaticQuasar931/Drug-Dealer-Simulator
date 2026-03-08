@@ -1,7 +1,7 @@
-﻿[
-  {"id":"mixing_tables","name":"Prep Tables","desc":"+9% production speed","baseCost":900,"costGrowth":1.56,"maxLevel":18,"effect":"prodSpeed","effectValue":0.09},
-  {"id":"sealed_kits","name":"Packaging Kits","desc":"+7% sale value","baseCost":1600,"costGrowth":1.61,"maxLevel":20,"effect":"saleValue","effectValue":0.07},
-  {"id":"quiet_drops","name":"Quiet Drops","desc":"-6% heat generation","baseCost":2200,"costGrowth":1.64,"maxLevel":16,"effect":"heatDown","effectValue":0.06},
-  {"id":"auto_dispatch","name":"Auto Dispatch","desc":"+1 auto batch","baseCost":3800,"costGrowth":1.75,"maxLevel":12,"effect":"autoBatch","effectValue":1},
-  {"id":"premium_cut","name":"Premium Quality","desc":"+0.05 quality","baseCost":5200,"costGrowth":1.88,"maxLevel":10,"effect":"quality","effectValue":0.05}
+[
+  {"id":"mixing_tables","name":"Prep Tables","desc":"+8.5% production speed","baseCost":280,"costGrowth":1.5,"maxLevel":18,"effect":"prodSpeed","effectValue":0.085},
+  {"id":"sealed_kits","name":"Packaging Kits","desc":"+6% sale value","baseCost":900,"costGrowth":1.58,"maxLevel":20,"effect":"saleValue","effectValue":0.06},
+  {"id":"quiet_drops","name":"Quiet Drops","desc":"-6% heat generation","baseCost":1400,"costGrowth":1.62,"maxLevel":16,"effect":"heatDown","effectValue":0.06},
+  {"id":"auto_dispatch","name":"Auto Dispatch","desc":"+1 auto batch","baseCost":2800,"costGrowth":1.74,"maxLevel":12,"effect":"autoBatch","effectValue":1},
+  {"id":"premium_cut","name":"Premium Quality","desc":"+0.05 quality","baseCost":4200,"costGrowth":1.84,"maxLevel":10,"effect":"quality","effectValue":0.05}
 ]

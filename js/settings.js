@@ -1,6 +1,7 @@
 window.DDS = window.DDS || {};
 (function () {
   const defaults = {
+    theme: 'neon',
     graphicsQuality: 'balanced',
     animationIntensity: 90,
     resolutionScale: 100,
@@ -20,6 +21,7 @@ window.DDS = window.DDS || {};
       const scale = Math.max(0.7, Math.min(1, s.resolutionScale / 100));
 
       document.body.dataset.quality = s.graphicsQuality;
+      document.body.dataset.theme = s.theme || 'neon';
       document.documentElement.style.setProperty('--anim-factor', String(animFactor));
       document.documentElement.style.setProperty('--ui-scale', String(scale));
 

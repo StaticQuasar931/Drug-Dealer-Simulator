@@ -39,6 +39,7 @@ window.DDS = window.DDS || {};
       merged.systems = Object.assign({}, base.systems, loaded.systems || {});
       merged.dealer = Object.assign({}, base.dealer, loaded.dealer || {});
       merged.panelState = Object.assign({}, base.panelState, loaded.panelState || {});
+      merged.settings = Object.assign({}, base.settings, loaded.settings || {});
       merged.currentSlot = slot;
 
       DDS.state = merged;
@@ -63,6 +64,33 @@ window.DDS = window.DDS || {};
       DDS.ui.notify(`Switched to slot ${target}.`);
       DDS.ui.buildStaticCards();
       DDS.ui.renderAll();
+    },
+
+    resetSlot(slot, silent) {
+      localStorage.removeItem(this.key(slot));
+      if (!silent) DDS.ui.notify(`Reset slot ${slot}.`);
+
+      if (DDS.state.currentSlot === Number(slot)) {
+        DDS.state = DDS.makeFreshState();
+        DDS.state.currentSlot = Number(slot);
+        DDS.ui.resetDisplays();
+        DDS.ui.buildStaticCards();
+        DDS.settings.applyToDocument();
+        DDS.ui.renderAll();
+      } else {
+        DDS.ui.updateSlotOptions();
+      }
+    },
+
+    resetAllSlots() {
+      [1, 2, 3].forEach((slot) => this.resetSlot(slot, true));
+      DDS.state = DDS.makeFreshState();
+      DDS.state.currentSlot = 1;
+      DDS.ui.resetDisplays();
+      DDS.ui.buildStaticCards();
+      DDS.settings.applyToDocument();
+      DDS.ui.renderAll();
+      DDS.ui.notify('All save slots reset.');
     },
 
     slotMeta(slot) {

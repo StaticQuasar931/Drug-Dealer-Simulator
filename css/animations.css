@@ -11,25 +11,32 @@
 
 @keyframes glowShift {
   0% { box-shadow: 0 0 0 rgba(48, 210, 166, 0); }
-  50% { box-shadow: 0 0 12px rgba(48, 210, 166, 0.08); }
+  50% { box-shadow: 0 0 10px rgba(48, 210, 166, 0.1); }
   100% { box-shadow: 0 0 0 rgba(48, 210, 166, 0); }
 }
 
 .note {
-  animation: fadeSlideIn calc(220ms * var(--anim-factor, 1)) ease;
+  animation: fadeSlideIn calc(180ms * var(--anim-factor, 1)) ease;
 }
 
 .event {
-  animation: glowShift calc(9s / var(--anim-factor, 1)) ease-in-out infinite;
+  animation: glowShift calc(8s / var(--anim-factor, 1)) ease-in-out infinite;
 }
 
 .panel {
-  transition: transform 180ms ease, opacity 180ms ease;
+  transition: transform 150ms ease, opacity 150ms ease;
 }
 
 .panel.hidden-panel {
   opacity: 0;
   transform: translateY(4px);
+}
+
+.progress > div,
+#slotProgressBar,
+#runDealProgress,
+#heatBar {
+  transition: width 110ms linear;
 }
 
 body[data-quality='low'] .event {

@@ -28,8 +28,26 @@ window.DDS = window.DDS || {};
       this.displayValues.lifetimeSales = DDS.state.lifetimeSales || 0;
       this.displayValues.lifetimeLaundered = DDS.state.lifetimeLaundered || 0;
     },
+    isTypingTarget(target) {
+      if (!target) return false;
+      const tag = (target.tagName || '').toLowerCase();
+      return tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable;
+    },
 
-    bind() {
+    openSettings() {
+      el('settingsModal').classList.add('active');
+      this.renderSettingsSnapshot();
+    },
+
+    closeSettings() {
+      el('settingsModal').classList.remove('active');
+    },
+
+    closeMenus() {
+      el('settingsModal').classList.remove('active');
+      el('adminPanel').classList.remove('active');
+      el('contentWarning').classList.remove('active');
+    },    bind() {
       const saveBtn = el('saveBtn');
       const loadBtn = el('loadBtn');
       const slotSelect = el('slotSelect');
@@ -39,6 +57,7 @@ window.DDS = window.DDS || {};
       saveBtn.addEventListener('click', () => DDS.save.manualSave());
       loadBtn.addEventListener('click', () => {
         DDS.save.loadOrFresh(DDS.state.currentSlot);
+        DDS.settings.applyToDocument();
         this.resetDisplays();
         this.buildStaticCards();
         this.notify(`Loaded slot ${DDS.state.currentSlot}.`);
@@ -46,18 +65,15 @@ window.DDS = window.DDS || {};
       });
       slotSelect.addEventListener('change', (e) => DDS.save.switchToSlot(e.target.value));
 
-      settingsBtn.addEventListener('click', () => {
-        el('settingsModal').classList.add('active');
-        this.renderSettingsSnapshot();
-      });
-      settingsClose.addEventListener('click', () => el('settingsModal').classList.remove('active'));
+      settingsBtn.addEventListener('click', () => this.openSettings());
+      settingsClose.addEventListener('click', () => this.closeSettings());
 
       el('runDealBtn').addEventListener('click', () => DDS.game.runStreetDeal());
       el('sellAllBtn').addEventListener('click', () => DDS.production.sellAll());
       el('launderBtn').addEventListener('click', () => DDS.laundering.manualLaunder());
       el('layLowBtn').addEventListener('click', () => {
         DDS.state.layLowUntil = Date.now() + 20000;
-        this.notify('Laying low for 20 seconds. Heat rises slower.');
+        this.notify('Laying low for 20 seconds. Product movement paused.');
       });
 
       el('dealProductSelect').addEventListener('change', (e) => {
@@ -65,6 +81,10 @@ window.DDS = window.DDS || {};
         this.renderDealState();
       });
 
+      el('themeSelect').addEventListener('change', (e) => {
+        DDS.state.settings.theme = e.target.value;
+        DDS.settings.applyToDocument();
+      });
       el('graphicsSelect').addEventListener('change', (e) => {
         DDS.state.settings.graphicsQuality = e.target.value;
         DDS.settings.applyToDocument();
@@ -84,6 +104,12 @@ window.DDS = window.DDS || {};
         DDS.state.settings.musicOn = Boolean(e.target.checked);
       });
 
+      el('resetSlotBtn').addEventListener('click', () => {
+        const slot = Number(el('resetSlotSelect').value);
+        DDS.save.resetSlot(slot);
+      });
+      el('resetAllSlotsBtn').addEventListener('click', () => DDS.save.resetAllSlots());
+
       el('continueBtn').addEventListener('click', () => {
         if (el('dontShowAgain').checked) localStorage.setItem('dds2_warning_ack', '1');
         el('contentWarning').classList.remove('active');
@@ -99,14 +125,68 @@ window.DDS = window.DDS || {};
         btn.addEventListener('click', () => DDS.game.togglePanel(btn.dataset.togglePanel));
       });
 
+      ['settingsModal', 'adminPanel', 'contentWarning'].forEach((id) => {
+        const node = el(id);
+        node.addEventListener('click', (evt) => {
+          if (evt.target !== node) return;
+          node.classList.remove('active');
+        });
+      });
+
       const seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'KeyL', 'KeyA'];
       const input = [];
       window.addEventListener('keydown', (e) => {
+        if (e.repeat) return;
         input.push(e.code);
         if (input.length > seq.length) input.shift();
         if (seq.every((code, i) => input[i] === code)) {
           el('adminPanel').classList.add('active');
           this.notify('Debug panel available.');
+        }
+
+        if (e.code === 'Escape') {
+          e.preventDefault();
+          if (el('settingsModal').classList.contains('active') || el('adminPanel').classList.contains('active') || el('contentWarning').classList.contains('active')) {
+            this.closeMenus();
+          } else {
+            this.openSettings();
+          }
+          return;
+        }
+
+        if (e.code === 'KeyE') {
+          e.preventDefault();
+          this.closeMenus();
+          return;
+        }
+
+        if (this.isTypingTarget(e.target)) return;
+
+        if (e.code === 'Space') {
+          e.preventDefault();
+          DDS.game.runStreetDeal();
+          return;
+        }
+        if (e.code === 'KeyS') {
+          e.preventDefault();
+          DDS.production.sellAll();
+          return;
+        }
+        if (e.code === 'KeyL') {
+          e.preventDefault();
+          DDS.state.layLowUntil = Date.now() + 20000;
+          this.notify('Laying low for 20 seconds. Product movement paused.');
+          return;
+        }
+
+        const m = e.code.match(/^Digit([1-9])$/);
+        if (m) {
+          const idx = Number(m[1]) - 1;
+          const unlocked = DDS.data.items.filter((item) => DDS.production.isMarketUnlocked(item.id));
+          const pick = unlocked[idx];
+          if (!pick) return;
+          const qty = e.shiftKey ? 10 : 1;
+          DDS.production.buySupply(pick.id, qty);
         }
       });
 
@@ -115,12 +195,18 @@ window.DDS = window.DDS || {};
 
     money(v) {
       return `$${Math.floor(v).toLocaleString('en-US')}`;
-    },
-
-    smoothValue(key, target, rate) {
+    },    smoothValue(key, target, rate) {
       const current = this.displayValues[key] || 0;
-      const next = current + (target - current) * rate;
-      this.displayValues[key] = Math.abs(target - next) < 0.6 ? target : next;
+      const diff = target - current;
+      if (Math.abs(diff) < 1) {
+        this.displayValues[key] = target;
+        return target;
+      }
+      const step = Math.max(1, Math.floor(Math.abs(diff) * rate));
+      this.displayValues[key] = current + Math.sign(diff) * step;
+      if ((diff > 0 && this.displayValues[key] > target) || (diff < 0 && this.displayValues[key] < target)) {
+        this.displayValues[key] = target;
+      }
       return this.displayValues[key];
     },
 
@@ -159,6 +245,7 @@ window.DDS = window.DDS || {};
           : `Slot ${slot} (${this.money(meta.lifetimeSales)} sales)`;
       });
       select.value = String(DDS.state.currentSlot);
+      el('resetSlotSelect').value = String(DDS.state.currentSlot);
     },
 
     buildStaticCards() {
@@ -470,8 +557,30 @@ window.DDS = window.DDS || {};
         button.setAttribute('aria-expanded', String(!collapsed));
       }
     },
+    nextMilestone() {
+      const st = DDS.state;
+      const targets = [];
 
-    updateSystemVisibility() {
+      Object.entries(DDS.progression.systems).forEach(([key, cost]) => {
+        if (st.systems[key]) return;
+        targets.push({ label: `System: ${key}`, cost });
+      });
+
+      Object.entries(DDS.progression.marketItems).forEach(([id, cost]) => {
+        if (st.lifetimeSales >= cost) return;
+        const item = DDS.data.items.find((x) => x.id === id);
+        targets.push({ label: `Market: ${item.name}`, cost });
+      });
+
+      Object.entries(DDS.progression.upgrades).forEach(([id, cost]) => {
+        if (st.lifetimeSales >= cost) return;
+        const u = DDS.data.upgrades.find((x) => x.id === id);
+        targets.push({ label: `Upgrade: ${u.name}`, cost });
+      });
+
+      targets.sort((a, b) => a.cost - b.cost);
+      return targets[0] || null;
+    },    updateSystemVisibility() {
       const st = DDS.state;
       document.querySelectorAll('[data-system]').forEach((panel) => {
         const system = panel.dataset.system;
@@ -479,38 +588,47 @@ window.DDS = window.DDS || {};
         panel.classList.toggle('hidden-panel', !unlocked);
       });
 
-      const nextSystem = Object.entries(DDS.progression.systems)
+      const now = Date.now();
+      const layLowLeft = Math.max(0, st.layLowUntil - now);
+      const milestone = this.nextMilestone();
+      let focusText = '';
+      if (layLowLeft > 0) {
+        focusText = `Laying low for ${(layLowLeft / 1000).toFixed(1)}s. Product movement is paused.`;
+      } else {
+        const best = DDS.game.bestDealItem();
+        focusText = best
+          ? `Run deals with ${best.name} and wash cash to fund upgrades.`
+          : 'Buy stock, run deals, then wash cash into clean funds.';
+      }
+
+      if (milestone) {
+        el('dealerHint').textContent = `Focus: ${focusText} Next milestone: ${milestone.label} at ${this.money(milestone.cost)} lifetime sales.`;
+      } else {
+        el('dealerHint').textContent = `Focus: ${focusText} All milestones unlocked.`;
+      }
+
+      const nextUpgrade = Object.entries(DDS.progression.upgrades)
         .filter(([, cost]) => st.lifetimeSales < cost)
         .sort((a, b) => a[1] - b[1])[0];
-
-      if (nextSystem) {
-        const [name, cost] = nextSystem;
-        const labelMap = {
-          production: 'Products',
-          workers: 'Crew',
-          districts: 'Districts',
-          fronts: 'Laundering Fronts',
-          upgrades: 'Upgrades',
-          events: 'Market Events'
-        };
-        el('dealerHint').textContent = `Focus now: buy stock, run deals, wash cash. Next unlock: ${labelMap[name]} at ${this.money(cost)} sales.`;
-      } else {
-        el('dealerHint').textContent = 'All systems unlocked. Focus on efficiency and heat control.';
-      }
 
       el('productionHint').textContent = 'Own production lines reduce dependence on market supply.';
       el('workersHint').textContent = 'Hire specialists to automate, protect, and scale your operation.';
       el('districtHint').textContent = 'District routes increase sale multipliers and add risk.';
-      el('frontHint').textContent = 'Each front has different laundering speed and efficiency.';
-      el('upgradeHint').textContent = 'Upgrade carefully to boost profit without over-heating.';
+      el('frontHint').textContent = 'Each front launders at different speed and efficiency.';
+      if (nextUpgrade) {
+        const u = DDS.data.upgrades.find((x) => x.id === nextUpgrade[0]);
+        el('upgradeHint').textContent = `Next upgrade unlock: ${u.name} at ${this.money(nextUpgrade[1])} lifetime sales.`;
+      } else {
+        el('upgradeHint').textContent = 'All upgrade lines unlocked. Focus on leveling and timing.';
+      }
 
       Object.keys(st.panelState).forEach((panelId) => this.applyPanelState(panelId));
 
       const unlockedCount = Object.values(st.systems).filter(Boolean).length;
       const board = el('boardRoot');
-      if (unlockedCount <= 1) {
+      if (unlockedCount <= 2) {
         board.dataset.stage = 'starter';
-      } else if (unlockedCount <= 3) {
+      } else if (unlockedCount <= 4) {
         board.dataset.stage = 'growth';
       } else {
         board.dataset.stage = 'empire';
@@ -520,9 +638,15 @@ window.DDS = window.DDS || {};
     renderAll() {
       const st = DDS.state;
 
-      const dirtyDisplay = this.smoothValue('dirtyMoney', st.dirtyMoney, 0.3);
-      const cleanDisplay = this.smoothValue('cleanMoney', st.cleanMoney, 0.3);
+      const dirtyDisplay = this.smoothValue('dirtyMoney', st.dirtyMoney, 0.58);
+      const cleanDisplay = this.smoothValue('cleanMoney', st.cleanMoney, 0.58);
 
+      el('themeSelect').value = st.settings.theme || 'neon';
+      el('graphicsSelect').value = st.settings.graphicsQuality;
+      el('animationRange').value = st.settings.animationIntensity;
+      el('scaleRange').value = st.settings.resolutionScale;
+      el('volumeRange').value = st.settings.soundVolume;
+      el('musicToggle').checked = st.settings.musicOn;
       el('dirtyMoney').textContent = this.money(dirtyDisplay);
       el('cleanMoney').textContent = this.money(cleanDisplay);
       el('demand').textContent = `${st.demandIndex.toFixed(2)}x`;
@@ -553,17 +677,22 @@ window.DDS = window.DDS || {};
       this.renderUpgrades();
       this.renderAchievements();
       this.renderSettingsSnapshot();
-    },
-
-    renderDealState() {
+    },    renderDealState() {
       const st = DDS.state;
       const runBtn = el('runDealBtn');
       const timer = el('runDealTimer');
       const prog = el('runDealProgress');
 
       const selected = DDS.data.items.find((x) => x.id === st.dealer.selectedItemId) || DDS.data.items[0];
-      const stock = st.inventory[selected.id] || 0;
+      const selectedStock = st.inventory[selected.id] || 0;
+      const best = DDS.game.bestDealItem();
+      if (selectedStock <= 0 && best && best.id !== selected.id) {
+        st.dealer.selectedItemId = best.id;
+        this.updateDealSelector(true);
+      }
 
+      const active = DDS.data.items.find((x) => x.id === st.dealer.selectedItemId) || selected;
+      const stock = st.inventory[active.id] || 0;
       const now = Date.now();
       const cooldownMs = Math.max(0, st.dealer.cooldownUntil - now);
       const totalMs = Math.max(1, st.dealer.cooldownDurationMs || 1);
@@ -571,25 +700,41 @@ window.DDS = window.DDS || {};
         ? Math.max(0, Math.min(100, ((totalMs - cooldownMs) / totalMs) * 100))
         : 0;
 
-      if (cooldownMs > 0) {
-        timer.textContent = `${(cooldownMs / 1000).toFixed(1)}s cooldown`;
-      } else {
-        timer.textContent = stock > 0 ? `Ready | Stock ${stock}` : 'Need stock';
-      }
+      if (cooldownMs > 0) timer.textContent = `${(cooldownMs / 1000).toFixed(1)}s cooldown`;
+      else timer.textContent = stock > 0 ? `Ready | Stock ${stock}` : 'Need stock';
       prog.style.width = `${fill}%`;
 
-      runBtn.disabled = cooldownMs > 0 || stock <= 0;
-      runBtn.dataset.tip = `Sell 1 ${selected.name} from inventory. Current stock: ${stock}`;
+      const layLow = now < st.layLowUntil;
+      runBtn.disabled = layLow || cooldownMs > 0 || stock <= 0;
+      runBtn.dataset.tip = `Sell 1 ${active.name} from inventory. Current stock: ${stock}`;
 
       el('dealerCooldown').textContent = cooldownMs > 0
         ? `Deal Cooldown: ${(cooldownMs / 1000).toFixed(1)}s`
-        : `Deal Cooldown: Ready (${selected.name})`;
-      el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank}`;
-    },
+        : `Deal Cooldown: Ready (${active.name})`;
+      el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank} (${DDS.game.rankTitle(st.dealer.rank)})`;
 
-    renderMarket() {
+      const sellBtn = el('sellAllBtn');
+      const sellCdMs = Math.max(0, st.streetDumpCooldownUntil - now);
+      sellBtn.textContent = sellCdMs > 0
+        ? `Sell Inventory (${(sellCdMs / 1000).toFixed(1)}s)`
+        : 'Sell Inventory';
+      sellBtn.disabled = layLow || sellCdMs > 0;
+    },    renderMarket() {
       const st = DDS.state;
+      const now = Date.now();
+      const layLow = now < st.layLowUntil;
       let lockedPreviewShown = false;
+
+      const nextMarket = DDS.data.items
+        .map((item) => ({ item, cost: DDS.production.marketUnlockSales(item.id) }))
+        .filter((x) => st.lifetimeSales < x.cost)
+        .sort((a, b) => a.cost - b.cost)[0];
+
+      if (nextMarket) {
+        el('streetMarketHead').textContent = `Street Market | Next: ${nextMarket.item.name} at ${this.money(nextMarket.cost)}`;
+      } else {
+        el('streetMarketHead').textContent = 'Street Market | All product routes unlocked';
+      }
 
       DDS.data.items.forEach((item) => {
         const n = this.nodes.market[item.id];
@@ -620,13 +765,14 @@ window.DDS = window.DDS || {};
         const unit = DDS.economy.supplyCost(item, 1);
         const bulk = DDS.economy.supplyCost(item, 10);
         const retail = DDS.economy.unitPrice(item);
+        const bulkUnit = bulk / 10;
 
         n.cost.textContent = this.money(unit);
-        n.bulk.textContent = this.money(bulk);
+        n.bulk.textContent = `${this.money(bulk)} (${this.money(bulkUnit)}/u)`;
         n.retail.textContent = this.money(retail);
 
-        n.buyOne.disabled = st.cleanMoney < unit;
-        n.buyTen.disabled = st.cleanMoney < bulk;
+        n.buyOne.disabled = layLow || st.cleanMoney < unit;
+        n.buyTen.disabled = layLow || st.cleanMoney < bulk;
 
         n.product.dataset.tip = `Stock: ${st.inventory[item.id] || 0} | Tier ${item.tier} | Heat ${item.baseHeat.toFixed(2)}`;
         n.product.classList.add('tip');
@@ -668,9 +814,9 @@ window.DDS = window.DDS || {};
         }
 
         if (unlockedLine) {
-          n.lock.textContent = 'Production line active.';
+          n.lock.textContent = Date.now() < st.layLowUntil ? 'Laying low: line paused.' : 'Production line active.';
           n.btn.textContent = 'Produce +1';
-          n.btn.disabled = false;
+          n.btn.disabled = Date.now() < st.layLowUntil;
           n.btn.onclick = () => DDS.production.clickProduce(item.id);
           n.btn.dataset.tip = `Manual production for ${item.name}.`;
           return;
@@ -785,6 +931,7 @@ window.DDS = window.DDS || {};
 
       const rows = [
         ['Device', this.deviceLabel()],
+        ['Rank', `${st.dealer.rank} (${DDS.game.rankTitle(st.dealer.rank)})`],
         ['Lifetime Sales', this.money(st.lifetimeSales)],
         ['Total Laundered', this.money(st.lifetimeLaundered)],
         ['Street Deals', `${st.streetDeals}`],
@@ -792,6 +939,7 @@ window.DDS = window.DDS || {};
         ['Workers', `${DDS.workers.totalCount()}`],
         ['Districts', `${st.unlockedDistricts.length}/${DDS.data.districts.length}`],
         ['Heat Stage', DDS.game.heatStage()],
+        ['Theme', DDS.state.settings.theme || 'neon'],
         ['Graphics', DDS.settings.labelQuality(st.settings.graphicsQuality)]
       ];
 

@@ -1,17 +1,19 @@
-@media (max-width: 1300px) {
+@media (max-width: 1350px) {
   .board { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
   .panel-street { grid-column: span 3; }
+  .resources { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-@media (max-width: 1020px) {
+@media (max-width: 1050px) {
   .topbar { grid-template-columns: 1fr; }
   .board { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
   .panel-street { grid-column: span 2; }
-  .resources { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .resources { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .street-bottom { grid-template-columns: 1fr; }
   .settings-subpanels { grid-template-columns: 1fr; }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .board { grid-template-columns: 1fr; }
   .panel-street { grid-column: span 1; }
   .quick-actions { grid-template-columns: 1fr; }
@@ -19,6 +21,7 @@
   .btns { justify-content: flex-start; flex-wrap: wrap; }
   .banner { width: 96px; height: 56px; }
   .deal-grid { grid-template-columns: 1fr; }
+  .resources { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .market-columns,
-  .market-row { grid-template-columns: 1.4fr 0.7fr 0.9fr 0.9fr 1fr; }
+  .market-row { grid-template-columns: 1.25fr 0.8fr 1.1fr 0.9fr 1fr; }
 }

@@ -14,11 +14,11 @@ window.DDS = window.DDS || {};
       { id: 'heroin', name: 'Heroin', tier: 10, baseTime: 86, baseValue: 1320, baseHeat: 7.1, quality: 1, emoji: '\uD83E\uDE79', icon: 'assets/icons/product-heroin.svg', unlockCost: 360000 }
     ],
     upgrades: [
-      { id: 'mixing_tables', name: 'Prep Tables', desc: '+9% production speed', baseCost: 900, costGrowth: 1.56, maxLevel: 18 },
-      { id: 'sealed_kits', name: 'Packaging Kits', desc: '+7% sale value', baseCost: 1600, costGrowth: 1.61, maxLevel: 20 },
-      { id: 'quiet_drops', name: 'Quiet Drops', desc: '-6% heat generation', baseCost: 2200, costGrowth: 1.64, maxLevel: 16 },
-      { id: 'auto_dispatch', name: 'Auto Dispatch', desc: '+1 auto batch', baseCost: 3800, costGrowth: 1.75, maxLevel: 12 },
-      { id: 'premium_cut', name: 'Premium Quality', desc: '+0.05 quality', baseCost: 5200, costGrowth: 1.88, maxLevel: 10 }
+      { id: 'mixing_tables', name: 'Prep Tables', desc: '+8.5% production speed', baseCost: 280, costGrowth: 1.5, maxLevel: 18 },
+      { id: 'sealed_kits', name: 'Packaging Kits', desc: '+6% sale value', baseCost: 900, costGrowth: 1.58, maxLevel: 20 },
+      { id: 'quiet_drops', name: 'Quiet Drops', desc: '-6% heat generation', baseCost: 1400, costGrowth: 1.62, maxLevel: 16 },
+      { id: 'auto_dispatch', name: 'Auto Dispatch', desc: '+1 auto batch', baseCost: 2800, costGrowth: 1.74, maxLevel: 12 },
+      { id: 'premium_cut', name: 'Premium Quality', desc: '+0.05 quality', baseCost: 4200, costGrowth: 1.84, maxLevel: 10 }
     ],
     workers: [
       { id: 'dealers', name: 'Dealers', baseCost: 260, costGrowth: 1.2, desc: 'Automates low-tier flow.', portrait: 'assets/characters/worker-dealer.png' },
@@ -59,58 +59,58 @@ window.DDS = window.DDS || {};
 
   DDS.progression = {
     systems: {
-      production: 3200,
-      workers: 7500,
-      districts: 14000,
-      fronts: 19000,
-      upgrades: 25000,
-      events: 32000
+      production: 3500,
+      workers: 6000,
+      districts: 16000,
+      fronts: 22000,
+      upgrades: 0,
+      events: 36000
     },
     marketItems: {
       baggie_weed: 0,
-      pre_roll_joints: 700,
-      thc_edibles: 2400,
+      pre_roll_joints: 600,
+      thc_edibles: 2200,
       thc_vape_carts: 7000,
-      nicotine_pods: 14000,
-      mdma_ecstasy: 30000,
-      lsd_tabs: 52000,
-      cocaine: 90000,
-      methamphetamine: 170000,
-      heroin: 280000
+      nicotine_pods: 15000,
+      mdma_ecstasy: 32000,
+      lsd_tabs: 56000,
+      cocaine: 98000,
+      methamphetamine: 180000,
+      heroin: 300000
     },
     productionItems: {
-      baggie_weed: 3200,
-      pre_roll_joints: 7500,
-      thc_edibles: 13000,
-      thc_vape_carts: 22000,
-      nicotine_pods: 33000,
-      mdma_ecstasy: 52000,
-      lsd_tabs: 74000,
-      cocaine: 120000,
-      methamphetamine: 210000,
-      heroin: 320000
+      baggie_weed: 3500,
+      pre_roll_joints: 8000,
+      thc_edibles: 14000,
+      thc_vape_carts: 24000,
+      nicotine_pods: 36000,
+      mdma_ecstasy: 56000,
+      lsd_tabs: 76000,
+      cocaine: 126000,
+      methamphetamine: 220000,
+      heroin: 340000
     },
     workers: {
-      dealers: 7500,
-      chemists: 16000,
-      security: 24000,
-      smugglers: 36000,
-      accountants: 52000,
-      hackers: 90000
+      dealers: 6000,
+      chemists: 17000,
+      security: 26000,
+      smugglers: 38000,
+      accountants: 56000,
+      hackers: 94000
     },
     upgrades: {
-      mixing_tables: 25000,
-      sealed_kits: 30000,
-      quiet_drops: 37000,
-      auto_dispatch: 50000,
-      premium_cut: 68000
+      mixing_tables: 0,
+      sealed_kits: 1800,
+      quiet_drops: 4200,
+      auto_dispatch: 13000,
+      premium_cut: 24000
     },
     fronts: {
-      car_wash: 19000,
-      arcade: 36000,
-      laundromat: 70000,
-      food_truck: 140000,
-      car_dealer: 280000
+      car_wash: 22000,
+      arcade: 38000,
+      laundromat: 72000,
+      food_truck: 145000,
+      car_dealer: 285000
     }
   };
 
@@ -132,7 +132,7 @@ window.DDS = window.DDS || {};
 
     return {
       dirtyMoney: 0,
-      cleanMoney: 180,
+      cleanMoney: 120,
       inventory,
       unlockedItems,
       prodProgress,
@@ -151,6 +151,7 @@ window.DDS = window.DDS || {};
       lifetimeLaundered: 0,
       streetDeals: 0,
       weedSold: 0,
+      streetDumpCooldownUntil: 0,
       dealer: {
         rank: 1,
         selectedItemId: 'baggie_weed',
@@ -164,7 +165,7 @@ window.DDS = window.DDS || {};
         workers: false,
         districts: false,
         fronts: false,
-        upgrades: false,
+        upgrades: true,
         events: false
       },
       panelState: {
@@ -172,20 +173,43 @@ window.DDS = window.DDS || {};
         workers: false,
         districts: false,
         fronts: false,
-        upgrades: false,
+        upgrades: true,
         heat: false
       },
       settings,
       currentSlot: 1,
       lastSaveTime: Date.now(),
       lastTrustedTime: Date.now(),
-      meterToken: 473
+      meterToken: 474
     };
   };
 
   DDS.state = DDS.makeFreshState();
 
   DDS.game = {
+    rankTitle(rank) {
+      if (rank < 3) return 'Street Rookie';
+      if (rank < 6) return 'Corner Dealer';
+      if (rank < 10) return 'Route Operator';
+      if (rank < 15) return 'Block Controller';
+      if (rank < 22) return 'City Supplier';
+      return 'Druglord';
+    },
+
+    bestDealItem() {
+      const st = DDS.state;
+      let best = null;
+      DDS.data.items.forEach((item) => {
+        if (!DDS.production.isMarketUnlocked(item.id)) return;
+        const stock = st.inventory[item.id] || 0;
+        if (stock <= 0) return;
+        if (!best || DDS.economy.unitPrice(item) > DDS.economy.unitPrice(best)) {
+          best = item;
+        }
+      });
+      return best;
+    },
+
     selectDealItem(itemId) {
       const item = DDS.data.items.find((x) => x.id === itemId);
       if (!item) return;
@@ -196,17 +220,31 @@ window.DDS = window.DDS || {};
       const st = DDS.state;
       const now = Date.now();
 
+      if (now < st.layLowUntil) {
+        DDS.ui.notify('You are laying low. No deals can run right now.', 'warn');
+        return;
+      }
+
       if (now < st.dealer.cooldownUntil) {
         DDS.ui.notify('Deal is cooling down.', 'warn');
         return;
       }
 
-      const selectedId = st.dealer.selectedItemId || 'baggie_weed';
-      const item = DDS.data.items.find((x) => x.id === selectedId);
-      if (!item) return;
+      let selectedId = st.dealer.selectedItemId || 'baggie_weed';
+      let item = DDS.data.items.find((x) => x.id === selectedId);
 
-      if (!DDS.production.isMarketUnlocked(item.id)) {
-        DDS.ui.notify('This product is not unlocked for your street route yet.', 'warn');
+      const hasStock = item && (st.inventory[item.id] || 0) > 0;
+      if (!hasStock) {
+        const best = this.bestDealItem();
+        if (best) {
+          st.dealer.selectedItemId = best.id;
+          item = best;
+          DDS.ui.notify(`Auto-selected ${best.name} for best active route value.`);
+        }
+      }
+
+      if (!item || !DDS.production.isMarketUnlocked(item.id)) {
+        DDS.ui.notify('No eligible product selected for this route.', 'warn');
         return;
       }
 
@@ -218,8 +256,8 @@ window.DDS = window.DDS || {};
 
       st.inventory[item.id] -= 1;
 
-      const rankBonus = 1 + st.dealer.rank * 0.018;
-      const swing = 0.93 + Math.random() * 0.18;
+      const rankBonus = 1 + st.dealer.rank * 0.017;
+      const swing = 0.94 + Math.random() * 0.17;
       const saleValue = DDS.economy.unitPrice(item) * rankBonus * swing;
       st.dirtyMoney += saleValue;
       st.lifetimeSales += saleValue;
@@ -227,18 +265,16 @@ window.DDS = window.DDS || {};
       if (item.tier <= 4) st.weedSold += 1;
 
       const quietCut = 1 - (st.upgrades.quiet_drops || 0) * 0.06;
-      const layLowMod = now < st.layLowUntil ? 0.82 : 1;
-      const heatGain = item.baseHeat * (0.52 + item.tier * 0.04) * Math.max(0.32, quietCut) * DDS.map.heatMultiplier() * layLowMod;
+      const heatGain = item.baseHeat * (0.42 + item.tier * 0.05) * Math.max(0.32, quietCut) * DDS.map.heatMultiplier();
       st.heat = Math.min(100, st.heat + heatGain);
 
-      const nextRankSales = st.dealer.rank * 7000;
-      if (st.streetDeals % 18 === 0 || st.lifetimeSales >= nextRankSales) {
+      const nextRankSales = st.dealer.rank * 7600;
+      if (st.streetDeals % 20 === 0 || st.lifetimeSales >= nextRankSales) {
         st.dealer.rank += 1;
-        DDS.ui.notify(`Dealer rank up: ${st.dealer.rank}`);
+        DDS.ui.notify(`Rank up: ${this.rankTitle(st.dealer.rank)} (Rank ${st.dealer.rank})`);
       }
 
-      let cooldownSec = Math.max(1.35, 5.6 + item.tier * 0.24 - st.dealer.rank * 0.11);
-      if (now < st.layLowUntil) cooldownSec *= 1.08;
+      const cooldownSec = Math.max(1.2, 4.8 + item.tier * 0.32 - st.dealer.rank * 0.14);
       st.dealer.cooldownStartedAt = now;
       st.dealer.cooldownDurationMs = cooldownSec * 1000;
       st.dealer.cooldownUntil = now + st.dealer.cooldownDurationMs;
@@ -250,11 +286,11 @@ window.DDS = window.DDS || {};
       const st = DDS.state;
       const thresholds = DDS.progression.systems;
       const unlockMessages = {
-        production: 'Products unlocked. You can start your own production lines.',
+        production: 'Products unlocked. You can now run your own production lines.',
         workers: 'Crew unlocked. Hiring is now available.',
         districts: 'Districts unlocked. Territory expansion is now available.',
         fronts: 'Fronts unlocked. Passive laundering is now available.',
-        upgrades: 'Upgrades unlocked. Efficiency scaling is now available.',
+        upgrades: 'Upgrades unlocked.',
         events: 'Market events unlocked.'
       };
 
@@ -325,7 +361,7 @@ window.DDS = window.DDS || {};
 
     simulateOffline(seconds) {
       if (!seconds) return;
-      const loops = Math.min(2400, Math.floor(seconds));
+      const loops = Math.min(2600, Math.floor(seconds));
       for (let i = 0; i < loops; i += 1) this.tick(1, true);
       DDS.ui.notify(`Offline progress: ${Math.floor(seconds)}s simulated.`);
     },
@@ -350,12 +386,12 @@ window.DDS = window.DDS || {};
       const st = DDS.state;
       if (st.heat < 75) return;
       st.hasReachedRaidRisk = true;
-      if (Math.random() > 0.026) return;
+      if (Math.random() > 0.023) return;
       const sec = st.workers.security || 0;
-      const lossScale = Math.max(0.18, 1 - sec * 0.01);
-      const dirtyLoss = st.dirtyMoney * (0.16 * lossScale);
+      const lossScale = Math.max(0.16, 1 - sec * 0.01);
+      const dirtyLoss = st.dirtyMoney * (0.15 * lossScale);
       st.dirtyMoney -= dirtyLoss;
-      st.heat = Math.max(48, st.heat - 23);
+      st.heat = Math.max(48, st.heat - 22);
       DDS.ui.notify(`Raid pressure hit. Lost ${DDS.ui.money(dirtyLoss)} dirty cash.`, 'warn');
       DDS.ui.log('Raid risk event applied.');
     },
@@ -377,7 +413,7 @@ window.DDS = window.DDS || {};
         st.heat = Math.max(0, st.heat - 0.62 * deltaSec);
       }
 
-      const passiveCool = 0.04 + (st.workers.security || 0) * 0.0012;
+      const passiveCool = 0.045 + (st.workers.security || 0) * 0.0012;
       st.heat = Math.max(0, st.heat - passiveCool * deltaSec);
 
       DDS.production.tick(deltaSec);
@@ -394,9 +430,9 @@ window.DDS = window.DDS || {};
 
     uiRefreshMs() {
       const q = DDS.state.settings.graphicsQuality;
-      if (q === 'low') return 480;
-      if (q === 'high') return 110;
-      return 220;
+      if (q === 'low') return 220;
+      if (q === 'high') return 70;
+      return 110;
     },
 
     start() {
@@ -408,6 +444,7 @@ window.DDS = window.DDS || {};
       DDS.ui.buildStaticCards();
       DDS.settings.applyToDocument();
 
+      document.getElementById('themeSelect').value = DDS.state.settings.theme || 'neon';
       document.getElementById('graphicsSelect').value = DDS.state.settings.graphicsQuality;
       document.getElementById('animationRange').value = DDS.state.settings.animationIntensity;
       document.getElementById('scaleRange').value = DDS.state.settings.resolutionScale;
