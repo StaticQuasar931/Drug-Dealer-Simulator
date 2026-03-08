@@ -4,7 +4,7 @@
     clickProduce(itemId) {
       const st = DDS.state;
       if (!st.systems.production) {
-        DDS.ui.notify('Production not unlocked yet.', 'warn');
+        DDS.ui.notify('Products are not unlocked yet.', 'warn');
         return;
       }
       if (!st.unlockedItems[itemId]) return;
@@ -20,14 +20,14 @@
       const chemists = st.workers.chemists || 0;
       const dealers = st.workers.dealers || 0;
       const autoUpgrade = st.upgrades.auto_dispatch || 0;
-      const prodSpeed = 1 + chemists * 0.03 + (st.upgrades.mixing_tables || 0) * 0.1;
+      const prodSpeed = 1 + chemists * 0.028 + (st.upgrades.mixing_tables || 0) * 0.09;
 
       DDS.data.items.forEach((item) => {
         if (!st.unlockedItems[item.id]) return;
         st.prodProgress[item.id] = st.prodProgress[item.id] || 0;
         st.prodProgress[item.id] += (deltaSec * prodSpeed) / item.baseTime;
 
-        const autoByDealers = Math.floor(dealers * 0.03);
+        const autoByDealers = Math.floor(dealers * 0.028);
         const autoAmount = autoByDealers + autoUpgrade;
         if (autoAmount <= 0) return;
 
@@ -35,7 +35,7 @@
           st.prodProgress[item.id] -= 1;
           st.inventory[item.id] += autoAmount;
           const heatMod = 1 - (st.upgrades.quiet_drops || 0) * 0.06;
-          st.heat += item.baseHeat * Math.max(0.3, heatMod) * 0.34;
+          st.heat += item.baseHeat * Math.max(0.3, heatMod) * 0.33;
         }
       });
 
@@ -44,10 +44,12 @@
     sellAll() {
       const st = DDS.state;
       let sale = 0;
+      let weedUnits = 0;
       DDS.data.items.forEach((item) => {
         const qty = st.inventory[item.id] || 0;
         if (!qty) return;
         sale += qty * DDS.economy.unitPrice(item);
+        if (item.tier <= 4) weedUnits += qty;
         st.inventory[item.id] = 0;
       });
       if (sale <= 0) {
@@ -57,7 +59,8 @@
       const securityMitigation = (st.workers.security || 0) * 0.003;
       st.dirtyMoney += sale;
       st.lifetimeSales += sale;
-      st.heat += Math.max(0.9, 3.2 - securityMitigation * 10);
+      st.weedSold += weedUnits;
+      st.heat += Math.max(0.9, 3.0 - securityMitigation * 10);
       DDS.ui.notify(`Sold inventory for ${DDS.ui.money(sale)} dirty cash.`);
       DDS.ui.log(`Market sale completed: ${DDS.ui.money(sale)}.`);
     }

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drug Dealer Simulator 2.0.0</title>
-  <meta name="description" content="Fictional idle tycoon game with progression, districts, workers, and automation.">
+  <title>Drug Dealer Simulator 2.0.0.3</title>
+  <meta name="description" content="Fictional idle tycoon game with adaptive progression and smooth UI.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/ui.css">
@@ -22,7 +22,7 @@
       <p>None of this content is intended to encourage real-world illegal activity or harm anyone.</p>
       <p>Player discretion is advised.</p>
       <button id="learnMoreBtn" class="ghost">Learn More</button>
-      <p id="learnMoreCopy" class="small hidden">This is a fictional tycoon simulation focused on economy, risk, and growth systems.</p>
+      <p id="learnMoreCopy" class="small hidden">This is a fictional tycoon simulation focused on economy, risk, and progression.</p>
       <label class="check"><input id="dontShowAgain" type="checkbox"> Dont Show Again</label>
       <div class="actions">
         <button id="continueBtn" class="primary">Continue</button>
@@ -36,15 +36,15 @@
       <img src="assets/characters/dealer.png" alt="Dealer portrait" class="lead-portrait">
       <div>
         <h1>Drug Dealer Simulator</h1>
-        <p>Version 2.0.0</p>
+        <p>Version 2.0.0.3</p>
       </div>
     </div>
 
     <div class="resources">
-      <div><span>Dirty</span><strong id="dirtyMoney">$0</strong></div>
-      <div><span>Clean</span><strong id="cleanMoney">$0</strong></div>
-      <div><span>Demand</span><strong id="demand">1.00x</strong></div>
-      <div><span>Heat</span><strong id="heatPercent">0%</strong></div>
+      <div class="res-card"><span>Dirty</span><strong id="dirtyMoney">$0</strong></div>
+      <div class="res-card"><span>Clean</span><strong id="cleanMoney">$0</strong></div>
+      <div class="res-card"><span>Demand</span><strong id="demand">1.00x</strong></div>
+      <div class="res-card"><span>Heat</span><strong id="heatPercent">0%</strong></div>
     </div>
 
     <div class="btns">
@@ -61,79 +61,111 @@
     </div>
   </header>
 
-  <main class="board">
-    <section class="panel panel-wide">
-      <h2>Street Level</h2>
-      <p class="panel-note" id="dealerHint">You are a small-time dealer. Build your first customer loop.</p>
+  <main class="board" id="boardRoot">
+    <section class="panel panel-street" data-panel="street">
+      <div class="panel-head static-head">
+        <h2>Street Operation</h2>
+      </div>
+      <p class="panel-note" id="dealerHint">Start simple. Work the school area, stack street sales, then scale.</p>
+
       <div class="quick-actions">
         <button id="runDealBtn" class="primary">Run Street Deal</button>
         <button id="layLowBtn" class="ghost">Lay Low (20s)</button>
         <button id="sellAllBtn" class="ghost">Sell Inventory</button>
         <button id="launderBtn" class="ghost">Manual Wash</button>
       </div>
+
       <div class="dealer-meta">
         <p id="dealerCooldown">Deal Cooldown: Ready</p>
         <p id="dealerRank">Dealer Rank: 1</p>
       </div>
+
       <div class="slot-progress-wrap">
         <div class="slot-progress-label" id="slotProgressText">Slot 1 progression: 0%</div>
         <div class="slot-progress"><div id="slotProgressBar"></div></div>
       </div>
+
       <div id="notificationStack"></div>
       <div id="logPanel" class="log"></div>
     </section>
 
-    <section class="panel">
-      <h2>Production</h2>
-      <p id="productionHint" class="panel-note">Locked. Reach $1,500 lifetime sales to open production.</p>
+    <section class="panel" data-panel="production" data-system="production">
+      <div class="panel-head">
+        <h2>Products</h2>
+        <button class="panel-toggle" data-toggle-panel="production" aria-expanded="true">Hide</button>
+      </div>
+      <p id="productionHint" class="panel-note"></p>
       <div id="productionList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Workers</h2>
-      <p id="workersHint" class="panel-note">Locked. Reach $3,000 lifetime sales to recruit workers.</p>
+    <section class="panel" data-panel="workers" data-system="workers">
+      <div class="panel-head">
+        <h2>Crew</h2>
+        <button class="panel-toggle" data-toggle-panel="workers" aria-expanded="true">Hide</button>
+      </div>
+      <p id="workersHint" class="panel-note"></p>
       <div id="workersList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Districts</h2>
-      <p id="districtHint" class="panel-note">Locked. Reach $6,000 lifetime sales to expand territory.</p>
+    <section class="panel" data-panel="districts" data-system="districts">
+      <div class="panel-head">
+        <h2>Districts</h2>
+        <button class="panel-toggle" data-toggle-panel="districts" aria-expanded="true">Hide</button>
+      </div>
+      <p id="districtHint" class="panel-note"></p>
       <div id="districtList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Laundering Fronts</h2>
-      <p id="frontHint" class="panel-note">Locked. Reach $9,000 lifetime sales to open fronts.</p>
+    <section class="panel" data-panel="fronts" data-system="fronts">
+      <div class="panel-head">
+        <h2>Laundering Fronts</h2>
+        <button class="panel-toggle" data-toggle-panel="fronts" aria-expanded="true">Hide</button>
+      </div>
+      <p id="frontHint" class="panel-note"></p>
       <div id="frontList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Upgrades</h2>
-      <p id="upgradeHint" class="panel-note">Locked. Reach $12,000 lifetime sales to access upgrades.</p>
+    <section class="panel" data-panel="upgrades" data-system="upgrades">
+      <div class="panel-head">
+        <h2>Upgrades</h2>
+        <button class="panel-toggle" data-toggle-panel="upgrades" aria-expanded="true">Hide</button>
+      </div>
+      <p id="upgradeHint" class="panel-note"></p>
       <div id="upgradesList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Heat and Events</h2>
+    <section class="panel" data-panel="heat" data-system="events">
+      <div class="panel-head">
+        <h2>Heat and Market</h2>
+        <button class="panel-toggle" data-toggle-panel="heat" aria-expanded="true">Hide</button>
+      </div>
       <div class="meter"><div id="heatBar"></div></div>
       <p id="heatStage">Suspicion</p>
       <div id="eventBanner" class="event">No active event.</div>
     </section>
 
-    <section class="panel">
-      <h2>Achievements</h2>
+    <section class="panel" data-panel="achievements">
+      <div class="panel-head">
+        <h2>Achievements</h2>
+        <button class="panel-toggle" data-toggle-panel="achievements" aria-expanded="true">Hide</button>
+      </div>
       <div id="achievementsList" class="cards"></div>
     </section>
 
-    <section class="panel">
-      <h2>Status</h2>
-      <p>Device: <span id="deviceType">Desktop</span></p>
-      <p>Graphics: <span id="graphicsMode">Balanced</span></p>
-      <p>Animation: <span id="animationValue">100%</span></p>
-      <p>Scale: <span id="scaleValue">100%</span></p>
-      <p>Music: <span id="musicValue">On</span></p>
-      <p>Total Sales: <span id="lifetimeSales">$0</span></p>
-      <p>Total Laundered: <span id="lifetimeLaundered">$0</span></p>
+    <section class="panel" data-panel="status">
+      <div class="panel-head">
+        <h2>Status</h2>
+        <button class="panel-toggle" data-toggle-panel="status" aria-expanded="true">Hide</button>
+      </div>
+      <div class="status-grid">
+        <p>Device: <span id="deviceType">Desktop</span></p>
+        <p>Graphics: <span id="graphicsMode">Balanced</span></p>
+        <p>Animation: <span id="animationValue">100%</span></p>
+        <p>Scale: <span id="scaleValue">100%</span></p>
+        <p>Music: <span id="musicValue">On</span></p>
+        <p>Total Sales: <span id="lifetimeSales">$0</span></p>
+        <p>Total Laundered: <span id="lifetimeLaundered">$0</span></p>
+      </div>
     </section>
   </main>
 

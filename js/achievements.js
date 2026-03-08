@@ -16,6 +16,7 @@
         let met = false;
         if (a.goal === 'lifetimeSales') met = st.lifetimeSales >= a.target;
         if (a.goal === 'streetDeals') met = st.streetDeals >= a.target;
+        if (a.goal === 'weedSold') met = st.weedSold >= a.target;
         if (a.goal === 'frontsOwned') met = Object.values(st.frontsOwned).filter(Boolean).length >= a.target;
         if (a.goal === 'districtsOwned') met = st.unlockedDistricts.length >= a.target;
         if (a.goal === 'workersTotal') met = DDS.workers.totalCount() >= a.target;

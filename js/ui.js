@@ -6,6 +6,12 @@
     nodes: {
       production: {}, workers: {}, districts: {}, fronts: {}, upgrades: {}, achievements: {}
     },
+    displayValues: {
+      dirtyMoney: 0,
+      cleanMoney: 0,
+      lifetimeSales: 0,
+      lifetimeLaundered: 0
+    },
 
     bind() {
       el('saveBtn').addEventListener('click', () => DDS.save.manualSave());
@@ -58,6 +64,10 @@
         btn.addEventListener('click', () => DDS.game.adminAction(btn.dataset.admin));
       });
 
+      document.querySelectorAll('[data-toggle-panel]').forEach((btn) => {
+        btn.addEventListener('click', () => DDS.game.togglePanel(btn.dataset.togglePanel));
+      });
+
       const seq = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'KeyL', 'KeyA'];
       const input = [];
       window.addEventListener('keydown', (e) => {
@@ -71,6 +81,13 @@
     },
 
     money(v) { return `$${Math.floor(v).toLocaleString('en-US')}`; },
+
+    smoothValue(key, target, rate) {
+      const current = this.displayValues[key] || 0;
+      const next = current + (target - current) * rate;
+      this.displayValues[key] = Math.abs(target - next) < 0.6 ? target : next;
+      return this.displayValues[key];
+    },
 
     log(msg) {
       const d = document.createElement('div');
@@ -242,37 +259,68 @@
       });
     },
 
+    applyPanelState(panelId) {
+      const panel = document.querySelector(`[data-panel="${panelId}"]`);
+      if (!panel) return;
+      const collapsed = !!DDS.state.panelState[panelId];
+      panel.classList.toggle('collapsed', collapsed);
+      const button = panel.querySelector(`[data-toggle-panel="${panelId}"]`);
+      if (button) {
+        button.textContent = collapsed ? 'Show' : 'Hide';
+        button.setAttribute('aria-expanded', String(!collapsed));
+      }
+    },
+
     updateSystemVisibility() {
       const st = DDS.state;
-      const systemReq = DDS.progression.systems;
+      document.querySelectorAll('[data-system]').forEach((panel) => {
+        const system = panel.dataset.system;
+        const unlocked = !!st.systems[system];
+        panel.classList.toggle('hidden-panel', !unlocked);
+      });
 
-      el('productionList').style.display = st.systems.production ? 'grid' : 'none';
-      el('workersList').style.display = st.systems.workers ? 'grid' : 'none';
-      el('districtList').style.display = st.systems.districts ? 'grid' : 'none';
-      el('frontList').style.display = st.systems.fronts ? 'grid' : 'none';
-      el('upgradesList').style.display = st.systems.upgrades ? 'grid' : 'none';
+      const nextSystem = Object.entries(DDS.progression.systems)
+        .filter(([, cost]) => st.lifetimeSales < cost)
+        .sort((a, b) => a[1] - b[1])[0];
 
-      el('productionHint').textContent = st.systems.production
-        ? 'Production unlocked. Start with weed lines and scale upward.'
-        : `Locked. Reach ${this.money(systemReq.production)} lifetime sales to open production.`;
-      el('workersHint').textContent = st.systems.workers
-        ? 'Workers unlocked. Build your crew.'
-        : `Locked. Reach ${this.money(systemReq.workers)} lifetime sales to recruit workers.`;
-      el('districtHint').textContent = st.systems.districts
-        ? 'District map unlocked. Expand territory.'
-        : `Locked. Reach ${this.money(systemReq.districts)} lifetime sales to expand territory.`;
-      el('frontHint').textContent = st.systems.fronts
-        ? 'Fronts unlocked. Passive laundering is active when owned.'
-        : `Locked. Reach ${this.money(systemReq.fronts)} lifetime sales to open fronts.`;
-      el('upgradeHint').textContent = st.systems.upgrades
-        ? 'Upgrades unlocked. Improve efficiency.'
-        : `Locked. Reach ${this.money(systemReq.upgrades)} lifetime sales to access upgrades.`;
+      if (nextSystem) {
+        const [name, cost] = nextSystem;
+        const labelMap = {
+          production: 'Products',
+          workers: 'Crew',
+          districts: 'Districts',
+          fronts: 'Laundering Fronts',
+          upgrades: 'Upgrades',
+          events: 'Market Events'
+        };
+        el('dealerHint').textContent = `Current focus: build street cash. Next unlock: ${labelMap[name]} at ${this.money(cost)} lifetime sales.`;
+      } else {
+        el('dealerHint').textContent = 'All systems unlocked. Focus on efficiency and risk management.';
+      }
+
+      el('productionHint').textContent = 'Build inventory lines from weed to advanced products.';
+      el('workersHint').textContent = 'Recruit a specialized crew to automate and stabilize operations.';
+      el('districtHint').textContent = 'Unlock districts for stronger route multipliers.';
+      el('frontHint').textContent = 'Use fronts to convert dirty cash with different tradeoffs.';
+      el('upgradeHint').textContent = 'Upgrade carefully to scale without overheating.';
+
+      Object.keys(st.panelState).forEach((panelId) => this.applyPanelState(panelId));
+
+      const visibleSystemPanels = document.querySelectorAll('[data-system]:not(.hidden-panel)').length;
+      const board = el('boardRoot');
+      board.classList.toggle('early-layout', visibleSystemPanels <= 1);
+
     },
 
     renderAll() {
       const st = DDS.state;
-      el('dirtyMoney').textContent = this.money(st.dirtyMoney);
-      el('cleanMoney').textContent = this.money(st.cleanMoney);
+      const dirtyDisplay = this.smoothValue('dirtyMoney', st.dirtyMoney, 0.3);
+      const cleanDisplay = this.smoothValue('cleanMoney', st.cleanMoney, 0.3);
+      const salesDisplay = this.smoothValue('lifetimeSales', st.lifetimeSales, 0.2);
+      const launderDisplay = this.smoothValue('lifetimeLaundered', st.lifetimeLaundered, 0.2);
+
+      el('dirtyMoney').textContent = this.money(dirtyDisplay);
+      el('cleanMoney').textContent = this.money(cleanDisplay);
       el('demand').textContent = `${st.demandIndex.toFixed(2)}x`;
       el('heatPercent').textContent = `${st.heat.toFixed(1)}%`;
       el('heatBar').style.width = `${Math.min(100, st.heat)}%`;
@@ -280,16 +328,17 @@
       el('heatStage').className = DDS.game.heatClass();
       el('eventBanner').textContent = st.activeEvent ? `${st.activeEvent.name}: ${st.activeEvent.desc}` : 'No active event.';
       el('deviceType').textContent = this.deviceLabel();
-      el('lifetimeSales').textContent = this.money(st.lifetimeSales);
-      el('lifetimeLaundered').textContent = this.money(st.lifetimeLaundered);
+      el('lifetimeSales').textContent = this.money(salesDisplay);
+      el('lifetimeLaundered').textContent = this.money(launderDisplay);
       el('dealerRank').textContent = `Dealer Rank: ${st.dealer.rank}`;
 
       const cooldownMs = Math.max(0, st.dealer.cooldownUntil - Date.now());
       el('dealerCooldown').textContent = cooldownMs > 0
         ? `Deal Cooldown: ${(cooldownMs / 1000).toFixed(1)}s`
         : 'Deal Cooldown: Ready';
+      el('runDealBtn').disabled = cooldownMs > 0;
 
-      const progressMax = 340000;
+      const progressMax = 450000;
       const pct = Math.min(100, (st.lifetimeSales / progressMax) * 100);
       el('slotProgressBar').style.width = `${pct}%`;
       el('slotProgressText').textContent = `Slot ${st.currentSlot} progression: ${pct.toFixed(1)}%`;
@@ -394,4 +443,5 @@
     }
   };
 })();
+
 

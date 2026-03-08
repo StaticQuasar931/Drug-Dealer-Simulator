@@ -34,6 +34,7 @@
       merged.achievementBonuses = Object.assign({}, base.achievementBonuses, loaded.achievementBonuses || {});
       merged.systems = Object.assign({}, base.systems, loaded.systems || {});
       merged.dealer = Object.assign({}, base.dealer, loaded.dealer || {});
+      merged.panelState = Object.assign({}, base.panelState, loaded.panelState || {});
       merged.currentSlot = slot;
 
       DDS.state = merged;
@@ -75,3 +76,5 @@
     }
   };
 })();
+
+

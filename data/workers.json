@@ -1,8 +1,8 @@
 ﻿[
-  {"id":"dealers","name":"Dealers","baseCost":220,"costGrowth":1.2,"baseOutput":1,"desc":"Automates low-tier street flow.","portrait":"assets/characters/worker-dealer.png"},
-  {"id":"chemists","name":"Chemists","baseCost":900,"costGrowth":1.24,"baseOutput":1,"desc":"Increases production speed.","portrait":"assets/characters/worker-chemist.png"},
-  {"id":"smugglers","name":"Smugglers","baseCost":1800,"costGrowth":1.28,"baseOutput":1,"desc":"Boosts district route multipliers.","portrait":"assets/characters/worker-smuggler.png"},
-  {"id":"accountants","name":"Accountants","baseCost":2500,"costGrowth":1.31,"baseOutput":1,"desc":"Improves laundering efficiency.","portrait":"assets/characters/worker-accountant.png"},
-  {"id":"security","name":"Security","baseCost":2200,"costGrowth":1.29,"baseOutput":1,"desc":"Reduces heat and raid impact.","portrait":"assets/characters/worker-security.png"},
-  {"id":"hackers","name":"Hackers","baseCost":5000,"costGrowth":1.34,"baseOutput":1,"desc":"Stabilizes demand and event risk.","portrait":"assets/characters/worker-hacker.png"}
+  {"id":"dealers","name":"Dealers","baseCost":260,"costGrowth":1.2,"baseOutput":1,"desc":"Automates low-tier flow.","portrait":"assets/characters/worker-dealer.png"},
+  {"id":"chemists","name":"Chemists","baseCost":980,"costGrowth":1.24,"baseOutput":1,"desc":"Increases production speed.","portrait":"assets/characters/worker-chemist.png"},
+  {"id":"smugglers","name":"Smugglers","baseCost":1900,"costGrowth":1.28,"baseOutput":1,"desc":"Boosts route multipliers.","portrait":"assets/characters/worker-smuggler.png"},
+  {"id":"accountants","name":"Accountants","baseCost":2700,"costGrowth":1.31,"baseOutput":1,"desc":"Improves laundering efficiency.","portrait":"assets/characters/worker-accountant.png"},
+  {"id":"security","name":"Security","baseCost":2400,"costGrowth":1.29,"baseOutput":1,"desc":"Cuts heat and raid losses.","portrait":"assets/characters/worker-security.png"},
+  {"id":"hackers","name":"Hackers","baseCost":5600,"costGrowth":1.34,"baseOutput":1,"desc":"Stabilizes markets and events.","portrait":"assets/characters/worker-hacker.png"}
 ]

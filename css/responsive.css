@@ -1,18 +1,18 @@
-﻿@media (max-width: 1260px) {
+﻿@media (max-width: 1300px) {
   .board { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
-  .panel-wide { grid-column: span 3; }
+  .panel-street { grid-column: span 3; }
+}
+@media (max-width: 1020px) {
   .topbar { grid-template-columns: 1fr; }
-}
-@media (max-width: 900px) {
   .board { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
-  .panel-wide { grid-column: span 2; }
-  .resources { grid-template-columns: repeat(2, 1fr); }
+  .panel-street { grid-column: span 2; }
+  .resources { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .board { grid-template-columns: 1fr; }
-  .panel-wide { grid-column: span 1; }
+  .panel-street { grid-column: span 1; }
   .quick-actions { grid-template-columns: 1fr; }
   .dealer-meta { grid-template-columns: 1fr; }
   .btns { justify-content: flex-start; flex-wrap: wrap; }
-  .banner { width: 88px; height: 52px; }
+  .banner { width: 96px; height: 56px; }
 }

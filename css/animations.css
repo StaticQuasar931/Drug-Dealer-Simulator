@@ -2,10 +2,12 @@
   from { transform: translateY(6px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
-@keyframes pulseSoft {
+@keyframes softPulse {
   0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.06); }
+  50% { filter: brightness(1.05); }
 }
 .note { animation: fadeSlideIn calc(220ms * var(--anim-factor, 1)) ease; }
-.event { animation: pulseSoft calc(6s / var(--anim-factor, 1)) ease-in-out infinite; }
+.event { animation: softPulse calc(6s / var(--anim-factor, 1)) ease-in-out infinite; }
+.panel { transition: transform 180ms ease, opacity 180ms ease; }
+.panel.hidden-panel { opacity: 0; transform: translateY(4px); }
 body[data-quality="low"] .event { animation: none; }

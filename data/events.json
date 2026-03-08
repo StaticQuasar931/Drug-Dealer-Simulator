@@ -1,7 +1,7 @@
 ﻿[
   {"id":"inspection_scare","name":"Inspection Scare","weight":20,"duration":75,"desc":"Patrol pressure rises.","heatDelta":9,"priceMod":0.95},
-  {"id":"market_boom","name":"Market Boom","weight":14,"duration":100,"desc":"Demand spikes city-wide.","heatDelta":4,"priceMod":1.22},
-  {"id":"supply_shortage","name":"Supply Shortage","weight":15,"duration":95,"desc":"Scarcity raises prices.","heatDelta":6,"priceMod":1.14},
+  {"id":"market_boom","name":"Market Boom","weight":14,"duration":100,"desc":"Demand spikes city-wide.","heatDelta":4,"priceMod":1.2},
+  {"id":"supply_shortage","name":"Supply Shortage","weight":15,"duration":95,"desc":"Scarcity raises prices.","heatDelta":6,"priceMod":1.13},
   {"id":"security_breach","name":"Security Breach","weight":10,"duration":70,"desc":"Operational leak adds risk.","heatDelta":14,"priceMod":0.92},
   {"id":"big_party","name":"Big Party","weight":12,"duration":85,"desc":"Weekend demand surge.","heatDelta":7,"priceMod":1.17},
   {"id":"supply_glut","name":"Supply Glut","weight":13,"duration":95,"desc":"Oversupply weakens margins.","heatDelta":-3,"priceMod":0.88}
